@@ -1,0 +1,14 @@
+[project]
+name = "aurabee-schema"
+version = "0.1.0"
+description = "Canonical AuraBee wire contracts shared by simulator and ingest"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aurabee_schema*"]

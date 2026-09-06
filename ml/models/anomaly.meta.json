@@ -1,0 +1,31 @@
+{
+  "version": "anomaly-iforest-0.1.0",
+  "trained_at": "2026-09-05T19:24:35Z",
+  "features": [
+    "thermal_delta",
+    "setpoint_error",
+    "delta_mean_24h",
+    "delta_min_24h",
+    "t_in_std_24h",
+    "weight_chg_24h",
+    "weight_chg_7d",
+    "weight_std_24h",
+    "sound_rms",
+    "centroid_hz",
+    "spectral_spread",
+    "entrance_total",
+    "traffic_per_gram",
+    "rh_delta"
+  ],
+  "fit_rows_healthy_only": 536890,
+  "threshold_p99_healthy": 0.5492,
+  "false_alarm_rate": 0.01,
+  "auc_by_fault": {
+    "pre_swarm": 0.9508,
+    "queenless": 0.9133,
+    "robbing": 0.9967,
+    "starvation": 0.7839,
+    "varroa": 0.6188
+  },
+  "caveat": "One-class detector fitted on simulated healthy hives. It answers 'unlike normal', not 'this specific fault'. It complements the classifier rather than replacing it, and cannot be evaluated with ordinary accuracy because it never saw a labelled fault."
+}

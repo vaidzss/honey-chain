@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aurabee.in/schema/telemetry/v1.json",
+  "title": "AuraBee hive telemetry frame v1",
+  "description": "Published to MQTT topic aurabee/telemetry/{node_id}. Emitted identically by the Python simulator and the ESP32-S3 firmware - if these ever diverge, the simulator is wrong.",
+  "type": "object",
+  "required": [
+    "v",
+    "node_id",
+    "ts",
+    "seq",
+    "sig"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "v": {
+      "const": 1,
+      "description": "Frame version"
+    },
+    "node_id": {
+      "type": "string",
+      "pattern": "^HN-[A-Z]{2}-[A-Z]{3}-[0-9]{4}$",
+      "description": "HN-<state>-<district>-<serial>"
+    },
+    "ts": {
+      "type": "integer",
+      "description": "Unix seconds, UTC"
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Monotonic per node. Ingest rejects seq <= last_seq (replay protection)"
+    },
+    "weight_kg": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 200
+    },
+    "t_in": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -20,
+      "maximum": 70,
+      "description": "Brood-nest temperature. A healthy colony holds 34-35C regardless of ambient; decoupling from that setpoint is the single most informative health signal we collect."
+    },
+    "rh_in": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "t_out": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -20,
+      "maximum": 70
+    },
+    "rh_out": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "sound_rms": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Broadband RMS of the hive mic, normalised 0-1"
+    },
+    "entrance_in": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "description": "Bee entries since last frame"
+    },
+    "entrance_out": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "batt_v": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 6
+    },
+    "lat": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -90,
+      "maximum": 90
+    },
+    "lon": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -180,
+      "maximum": 180
+    },
+    "features": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Optional acoustic features. The node computes these locally so raw audio never crosses the LoRa link - a bandwidth win that is also a privacy win.",
+      "additionalProperties": false,
+      "properties": {
+        "mfcc": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 13,
+          "maxItems": 13
+        },
+        "band_energy": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Energy in 100Hz bands, 0-2kHz"
+        },
+        "peak_hz": {
+          "type": "number",
+          "description": "Dominant frequency. ~200-300Hz is a settled colony; sustained shift upward precedes swarming."
+        },
+        "centroid_hz": {
+          "type": "number",
+          "description": "Energy-weighted mean frequency. Preferred scalar summary over peak_hz, which quantises to a 100Hz band and goes random on a near-flat spectrum."
+        }
+      }
+    },
+    "sig": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$",
+      "description": "Truncated HMAC-SHA256 over the canonical string (see docs/04-telemetry-contract.md). Verified by ingest against the node's key."
+    }
+  }
+}

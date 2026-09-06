@@ -1,0 +1,24 @@
+{
+  "name": "aurabee",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AuraBee / Honey Chain - blockchain + AI + IoT trust layer for Indian honey (SIH26021, KVIC)",
+  "workspaces": [
+    "apps/web",
+    "packages/contracts",
+    "packages/schema"
+  ],
+  "scripts": {
+    "infra:up": "docker compose -f infra/docker-compose.yml up -d",
+    "infra:down": "docker compose -f infra/docker-compose.yml down",
+    "infra:reset": "docker compose -f infra/docker-compose.yml down -v && docker compose -f infra/docker-compose.yml up -d",
+    "infra:logs": "docker compose -f infra/docker-compose.yml logs -f",
+    "chain:node": "npm run node -w @aurabee/contracts",
+    "chain:deploy": "npm run deploy -w @aurabee/contracts",
+    "chain:test": "npm run test -w @aurabee/contracts",
+    "web:dev": "npm run dev -w @aurabee/web"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,61 @@
+# deps
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# builds
+.next/
+out/
+dist/
+build/
+artifacts/
+cache/
+typechain-types/
+
+# env & secrets -- deny by default, allow the example explicitly
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.json
+*.secrets.json
+id_rsa*
+*.keystore
+
+# data
+*.db
+*.sqlite3
+data/
+ml/models/*.pt
+ml/models/*.tflite
+ml/models/*.onnx
+!ml/models/.gitkeep
+ml/datasets/
+
+# os / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# logs
+*.log
+npm-debug.log*
+
+# python build artifacts
+*.egg-info/
+ml/datasets/*.csv
+ml/models/*.joblib
+!ml/models/*.meta.json
+
+# local agent config
+.claude/

@@ -1,0 +1,9 @@
+{
+  "name": "@aurabee/schema",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Canonical wire contracts shared by simulator, firmware, ingest and web",
+  "main": "index.ts",
+  "types": "index.ts",
+  "files": ["index.ts", "telemetry.schema.json"]
+}

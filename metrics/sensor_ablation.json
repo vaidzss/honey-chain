@@ -1,0 +1,91 @@
+{
+  "generated_at": "2026-09-05T20:02:26Z",
+  "test_set": "ml/datasets/holdout_v1.csv (separate run, disjoint hives)",
+  "results": {
+    "everything": {
+      "features": 57,
+      "macro_f1": 0.7477,
+      "accuracy": 0.9749,
+      "recall": {
+        "queenless": 0.9825,
+        "pre_swarm": 0.9895,
+        "varroa": 0.5312,
+        "starvation": 0.5565,
+        "robbing": 0.9815
+      }
+    },
+    "no microphone": {
+      "features": 18,
+      "macro_f1": 0.4831,
+      "accuracy": 0.9294,
+      "recall": {
+        "queenless": 0.9789,
+        "pre_swarm": 0.3651,
+        "varroa": 0.2234,
+        "starvation": 0.5693,
+        "robbing": 0.3241
+      }
+    },
+    "no load cell": {
+      "features": 53,
+      "macro_f1": 0.7392,
+      "accuracy": 0.9553,
+      "recall": {
+        "queenless": 0.9048,
+        "pre_swarm": 0.9883,
+        "varroa": 0.6201,
+        "starvation": 0.4689,
+        "robbing": 0.9815
+      }
+    },
+    "no thermometers": {
+      "features": 49,
+      "macro_f1": 0.7096,
+      "accuracy": 0.9704,
+      "recall": {
+        "queenless": 0.9871,
+        "pre_swarm": 0.9904,
+        "varroa": 0.2474,
+        "starvation": 0.5743,
+        "robbing": 0.9815
+      }
+    },
+    "scale + thermometer only": {
+      "features": 15,
+      "macro_f1": 0.4771,
+      "accuracy": 0.9271,
+      "recall": {
+        "queenless": 0.9783,
+        "pre_swarm": 0.3256,
+        "varroa": 0.2234,
+        "starvation": 0.5667,
+        "robbing": 0.3241
+      }
+    },
+    "microphone only": {
+      "features": 42,
+      "macro_f1": 0.6925,
+      "accuracy": 0.9348,
+      "recall": {
+        "queenless": 0.9254,
+        "pre_swarm": 0.9895,
+        "varroa": 0.013,
+        "starvation": 0.1766,
+        "robbing": 0.9815
+      }
+    },
+    "scale only": {
+      "features": 7,
+      "macro_f1": 0.4332,
+      "accuracy": 0.9091,
+      "recall": {
+        "queenless": 0.9483,
+        "pre_swarm": 0.4263,
+        "varroa": 0.1182,
+        "starvation": 0.4651,
+        "robbing": 0.2037
+      }
+    }
+  },
+  "finding": "Removing the microphone costs 0.265 macro F1 and 0.624 of pre_swarm recall (0.990 -> 0.365) -- swarm prediction is almost entirely acoustic. The best single-sensor configuration is 'microphone only' at 0.693; the worst is 'scale only' at 0.433. Permutation importance ranked mass features on top and was misleading, because the 33 acoustic features are correlated and permuting one at a time barely moves the score. Ablation by sensor GROUP is the honest measurement."
+}

@@ -1,0 +1,9 @@
+{
+  "ran": true,
+  "exit_code": 0,
+  "batches_checked": 16,
+  "invariants_held": 25,
+  "invariants_broken": 0,
+  "all_hold": true,
+  "note": "Verified against chain state alone. The database supplied only the list of batch codes; every value was read from the deployed contracts."
+}

@@ -1,0 +1,112 @@
+{
+  "generated_at": "2026-09-05T19:56:38Z",
+  "version": "varroa-cv-0.1.0",
+  "method": "classical CV: adaptive threshold + size/shape/solidity filters",
+  "mean_relative_error": 0.1252,
+  "cases": [
+    {
+      "case": "clean board, no mites",
+      "true": 0,
+      "found": 0,
+      "error": 0,
+      "confidence": 0.85,
+      "px_per_mm": 7.44,
+      "rejected": {}
+    },
+    {
+      "case": "light infestation",
+      "true": 8,
+      "found": 6,
+      "error": -2,
+      "confidence": 0.87,
+      "px_per_mm": 7.44,
+      "rejected": {
+        "too_small": 16,
+        "too_large": 17,
+        "wrong_shape": 5,
+        "too_ragged": 5
+      }
+    },
+    {
+      "case": "moderate",
+      "true": 25,
+      "found": 23,
+      "error": -2,
+      "confidence": 0.95,
+      "px_per_mm": 7.44,
+      "rejected": {
+        "too_small": 21,
+        "too_large": 32,
+        "wrong_shape": 13,
+        "too_ragged": 1
+      }
+    },
+    {
+      "case": "heavy",
+      "true": 60,
+      "found": 50,
+      "error": -10,
+      "confidence": 0.95,
+      "px_per_mm": 7.44,
+      "rejected": {
+        "too_small": 31,
+        "too_large": 48,
+        "wrong_shape": 17,
+        "too_ragged": 7
+      }
+    },
+    {
+      "case": "heavy + lots of debris",
+      "true": 60,
+      "found": 54,
+      "error": -6,
+      "confidence": 0.931,
+      "px_per_mm": 7.44,
+      "rejected": {
+        "too_small": 90,
+        "too_large": 105,
+        "wrong_shape": 31,
+        "too_ragged": 15
+      }
+    },
+    {
+      "case": "low resolution photo",
+      "true": 25,
+      "found": 30,
+      "error": 5,
+      "confidence": 0.847,
+      "px_per_mm": 4.5,
+      "rejected": {
+        "too_small": 49,
+        "too_large": 23,
+        "wrong_shape": 21,
+        "too_ragged": 15
+      }
+    },
+    {
+      "case": "high resolution photo",
+      "true": 25,
+      "found": 23,
+      "error": -2,
+      "confidence": 0.95,
+      "px_per_mm": 7.44,
+      "rejected": {
+        "too_small": 19,
+        "too_large": 31,
+        "wrong_shape": 7,
+        "too_ragged": 5
+      }
+    },
+    {
+      "case": "mildly blurred",
+      "refused": true,
+      "reason": "The photo is out of focus. Hold the phone steady, about 30 cm above the board, and take it again."
+    },
+    {
+      "case": "very blurred",
+      "refused": true,
+      "reason": "The photo is out of focus. Hold the phone steady, about 30 cm above the board, and take it again."
+    }
+  ],
+  "caveat": "Measured against SYNTHETIC boards with known counts. This validates the algorithm's mechanics and serves as a regression test; it is NOT field accuracy. There is no annotated Indian sticky-board dataset to measure that against yet."
+}

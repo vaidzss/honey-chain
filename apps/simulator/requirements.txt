@@ -1,0 +1,4 @@
+paho-mqtt>=2.1.0
+numpy>=1.26
+psycopg[binary]>=3.2      # only needed for --from-db
+python-dotenv>=1.0

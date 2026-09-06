@@ -1,0 +1,385 @@
+{
+  "generated_at": "2026-09-05T20:45:27Z",
+  "models": {
+    "colony_health": {
+      "version": "health-hgb-0.1.0",
+      "trained_at": "2026-09-05T19:07:49Z",
+      "features": [
+        "thermal_delta",
+        "setpoint_error",
+        "t_in",
+        "t_out",
+        "rh_delta",
+        "sound_rms",
+        "centroid_hz",
+        "spectral_spread",
+        "low_band_ratio",
+        "queen_band_ratio",
+        "harmonic_ratio",
+        "be_n0",
+        "be_n1",
+        "be_n2",
+        "be_n3",
+        "be_n4",
+        "be_n5",
+        "be_n6",
+        "be_n7",
+        "be_n8",
+        "be_n9",
+        "be_n10",
+        "be_n11",
+        "be_n12",
+        "be_n13",
+        "be_n14",
+        "be_n15",
+        "be_n16",
+        "be_n17",
+        "be_n18",
+        "be_n19",
+        "mfcc_0",
+        "mfcc_1",
+        "mfcc_2",
+        "mfcc_3",
+        "mfcc_4",
+        "mfcc_5",
+        "mfcc_6",
+        "mfcc_7",
+        "mfcc_8",
+        "mfcc_9",
+        "mfcc_10",
+        "mfcc_11",
+        "mfcc_12",
+        "entrance_total",
+        "entrance_net",
+        "traffic_per_gram",
+        "weight_kg",
+        "weight_chg_24h",
+        "weight_chg_7d",
+        "weight_std_24h",
+        "t_in_std_24h",
+        "delta_mean_24h",
+        "delta_min_24h",
+        "hour",
+        "month",
+        "is_night"
+      ],
+      "classes": [
+        "dead",
+        "healthy",
+        "pre_swarm",
+        "queenless",
+        "robbing",
+        "starvation",
+        "varroa",
+        "wax_moth"
+      ],
+      "train_rows": 670841,
+      "train_hives": 110,
+      "test_rows": 121422,
+      "test_hives": 20,
+      "test_macro_f1": 0.7429,
+      "test_accuracy": 0.9737,
+      "per_class_recall": {
+        "healthy": 0.9823,
+        "pre_swarm": 0.9889,
+        "queenless": 0.9814,
+        "robbing": 0.9722,
+        "starvation": 0.5515,
+        "varroa": 0.5097,
+        "wax_moth": 0.0
+      },
+      "caveat": "Trained and evaluated entirely on simulated hives. This measures whether the model learned the simulator's physics, NOT that it works on real bees. Most public bee acoustics are Apis mellifera; Apis cerana indica is a further domain gap."
+    },
+    "yield_forecast": {
+      "version": "yield-gbq-0.1.0",
+      "trained_at": "2026-09-05T19:06:02Z",
+      "features": [
+        "days_observed",
+        "gross_gain_kg",
+        "net_gain_kg",
+        "peak_weight_kg",
+        "mean_thermal_delta",
+        "min_thermal_delta",
+        "frac_regulated",
+        "mean_sound_rms",
+        "mean_centroid",
+        "mean_traffic",
+        "mean_t_out",
+        "frac_foraging_weather",
+        "start_month",
+        "n_months"
+      ],
+      "window_days": 90,
+      "train_windows": 397,
+      "test_windows": 59,
+      "quantile_metrics": {
+        "p10": {
+          "pinball": 0.4959,
+          "mean_pred": 12.51
+        },
+        "p50": {
+          "pinball": 0.835,
+          "mean_pred": 14.28
+        },
+        "p90": {
+          "pinball": 0.3829,
+          "mean_pred": 16.98
+        }
+      },
+      "p90_coverage": 1.0,
+      "p90_coverage_uncalibrated": 0.9153,
+      "calibration_factor": 1.0332,
+      "p90_mean_headroom": 0.4497,
+      "caveat": "Trained on simulated hives. The P90 becomes an on-chain mint ceiling, so before any real deployment this must be refitted on measured harvests from the target district -- a ceiling calibrated on a simulator would block real beekeepers."
+    },
+    "anomaly_detector": {
+      "version": "anomaly-iforest-0.1.0",
+      "trained_at": "2026-09-05T19:24:35Z",
+      "features": [
+        "thermal_delta",
+        "setpoint_error",
+        "delta_mean_24h",
+        "delta_min_24h",
+        "t_in_std_24h",
+        "weight_chg_24h",
+        "weight_chg_7d",
+        "weight_std_24h",
+        "sound_rms",
+        "centroid_hz",
+        "spectral_spread",
+        "entrance_total",
+        "traffic_per_gram",
+        "rh_delta"
+      ],
+      "fit_rows_healthy_only": 536890,
+      "threshold_p99_healthy": 0.5492,
+      "false_alarm_rate": 0.01,
+      "auc_by_fault": {
+        "pre_swarm": 0.9508,
+        "queenless": 0.9133,
+        "robbing": 0.9967,
+        "starvation": 0.7839,
+        "varroa": 0.6188
+      },
+      "caveat": "One-class detector fitted on simulated healthy hives. It answers 'unlike normal', not 'this specific fault'. It complements the classifier rather than replacing it, and cannot be evaluated with ordinary accuracy because it never saw a labelled fault."
+    },
+    "varroa_counter": {
+      "generated_at": "2026-09-05T19:56:38Z",
+      "version": "varroa-cv-0.1.0",
+      "method": "classical CV: adaptive threshold + size/shape/solidity filters",
+      "mean_relative_error": 0.1252,
+      "cases": [
+        {
+          "case": "clean board, no mites",
+          "true": 0,
+          "found": 0,
+          "error": 0,
+          "confidence": 0.85,
+          "px_per_mm": 7.44,
+          "rejected": {}
+        },
+        {
+          "case": "light infestation",
+          "true": 8,
+          "found": 6,
+          "error": -2,
+          "confidence": 0.87,
+          "px_per_mm": 7.44,
+          "rejected": {
+            "too_small": 16,
+            "too_large": 17,
+            "wrong_shape": 5,
+            "too_ragged": 5
+          }
+        },
+        {
+          "case": "moderate",
+          "true": 25,
+          "found": 23,
+          "error": -2,
+          "confidence": 0.95,
+          "px_per_mm": 7.44,
+          "rejected": {
+            "too_small": 21,
+            "too_large": 32,
+            "wrong_shape": 13,
+            "too_ragged": 1
+          }
+        },
+        {
+          "case": "heavy",
+          "true": 60,
+          "found": 50,
+          "error": -10,
+          "confidence": 0.95,
+          "px_per_mm": 7.44,
+          "rejected": {
+            "too_small": 31,
+            "too_large": 48,
+            "wrong_shape": 17,
+            "too_ragged": 7
+          }
+        },
+        {
+          "case": "heavy + lots of debris",
+          "true": 60,
+          "found": 54,
+          "error": -6,
+          "confidence": 0.931,
+          "px_per_mm": 7.44,
+          "rejected": {
+            "too_small": 90,
+            "too_large": 105,
+            "wrong_shape": 31,
+            "too_ragged": 15
+          }
+        },
+        {
+          "case": "low resolution photo",
+          "true": 25,
+          "found": 30,
+          "error": 5,
+          "confidence": 0.847,
+          "px_per_mm": 4.5,
+          "rejected": {
+            "too_small": 49,
+            "too_large": 23,
+            "wrong_shape": 21,
+            "too_ragged": 15
+          }
+        },
+        {
+          "case": "high resolution photo",
+          "true": 25,
+          "found": 23,
+          "error": -2,
+          "confidence": 0.95,
+          "px_per_mm": 7.44,
+          "rejected": {
+            "too_small": 19,
+            "too_large": 31,
+            "wrong_shape": 7,
+            "too_ragged": 5
+          }
+        },
+        {
+          "case": "mildly blurred",
+          "refused": true,
+          "reason": "The photo is out of focus. Hold the phone steady, about 30 cm above the board, and take it again."
+        },
+        {
+          "case": "very blurred",
+          "refused": true,
+          "reason": "The photo is out of focus. Hold the phone steady, about 30 cm above the board, and take it again."
+        }
+      ],
+      "caveat": "Measured against SYNTHETIC boards with known counts. This validates the algorithm's mechanics and serves as a regression test; it is NOT field accuracy. There is no annotated Indian sticky-board dataset to measure that against yet."
+    }
+  },
+  "sensor_ablation": {
+    "generated_at": "2026-09-05T20:02:26Z",
+    "test_set": "ml/datasets/holdout_v1.csv (separate run, disjoint hives)",
+    "results": {
+      "everything": {
+        "features": 57,
+        "macro_f1": 0.7477,
+        "accuracy": 0.9749,
+        "recall": {
+          "queenless": 0.9825,
+          "pre_swarm": 0.9895,
+          "varroa": 0.5312,
+          "starvation": 0.5565,
+          "robbing": 0.9815
+        }
+      },
+      "no microphone": {
+        "features": 18,
+        "macro_f1": 0.4831,
+        "accuracy": 0.9294,
+        "recall": {
+          "queenless": 0.9789,
+          "pre_swarm": 0.3651,
+          "varroa": 0.2234,
+          "starvation": 0.5693,
+          "robbing": 0.3241
+        }
+      },
+      "no load cell": {
+        "features": 53,
+        "macro_f1": 0.7392,
+        "accuracy": 0.9553,
+        "recall": {
+          "queenless": 0.9048,
+          "pre_swarm": 0.9883,
+          "varroa": 0.6201,
+          "starvation": 0.4689,
+          "robbing": 0.9815
+        }
+      },
+      "no thermometers": {
+        "features": 49,
+        "macro_f1": 0.7096,
+        "accuracy": 0.9704,
+        "recall": {
+          "queenless": 0.9871,
+          "pre_swarm": 0.9904,
+          "varroa": 0.2474,
+          "starvation": 0.5743,
+          "robbing": 0.9815
+        }
+      },
+      "scale + thermometer only": {
+        "features": 15,
+        "macro_f1": 0.4771,
+        "accuracy": 0.9271,
+        "recall": {
+          "queenless": 0.9783,
+          "pre_swarm": 0.3256,
+          "varroa": 0.2234,
+          "starvation": 0.5667,
+          "robbing": 0.3241
+        }
+      },
+      "microphone only": {
+        "features": 42,
+        "macro_f1": 0.6925,
+        "accuracy": 0.9348,
+        "recall": {
+          "queenless": 0.9254,
+          "pre_swarm": 0.9895,
+          "varroa": 0.013,
+          "starvation": 0.1766,
+          "robbing": 0.9815
+        }
+      },
+      "scale only": {
+        "features": 7,
+        "macro_f1": 0.4332,
+        "accuracy": 0.9091,
+        "recall": {
+          "queenless": 0.9483,
+          "pre_swarm": 0.4263,
+          "varroa": 0.1182,
+          "starvation": 0.4651,
+          "robbing": 0.2037
+        }
+      }
+    },
+    "finding": "Removing the microphone costs 0.265 macro F1 and 0.624 of pre_swarm recall (0.990 -> 0.365) -- swarm prediction is almost entirely acoustic. The best single-sensor configuration is 'microphone only' at 0.693; the worst is 'scale only' at 0.433. Permutation importance ranked mass features on top and was misleading, because the 33 acoustic features are correlated and permuting one at a time barely moves the score. Ablation by sensor GROUP is the honest measurement."
+  },
+  "ledger_verification": {
+    "ran": true,
+    "exit_code": 0,
+    "batches_checked": 16,
+    "invariants_held": 25,
+    "invariants_broken": 0,
+    "all_hold": true,
+    "note": "Verified against chain state alone. The database supplied only the list of batch codes; every value was read from the deployed contracts."
+  },
+  "charts": [
+    "colony_health_recall.png",
+    "anomaly_auc.png",
+    "sensor_ablation.png"
+  ],
+  "global_caveat": "Every model number here was measured on SIMULATED hives. It shows the models learned the physics the simulator encodes; it is not evidence they work on real bees. Most public bee acoustics are Apis mellifera, and Apis cerana indica -- common in Indian beekeeping -- is a further gap with no public dataset."
+}

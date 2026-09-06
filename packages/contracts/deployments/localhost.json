@@ -1,0 +1,2695 @@
+{
+  "network": "localhost",
+  "chainId": 31337,
+  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "deployedAt": "2026-09-05T19:31:00.220Z",
+  "addresses": {
+    "Registry": "0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD",
+    "YieldOracle": "0x51A1ceB83B83F1985a81C295d1fF28Afef186E02",
+    "HoneyBatch": "0x36b58F5C1969B7b6591D752ea6F5486D069010AB",
+    "SealRegistry": "0x0355B7B8cb128fA5692729Ab3AAa199C1753f726",
+    "Attestation": "0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7"
+  },
+  "abis": {
+    "Registry": [
+      {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "AlreadyRegistered",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotAdmin",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotAuthorised",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "UnknownActor",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "UnknownApiary",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "enum Registry.Role",
+            "name": "role",
+            "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "name": "ActorRegistered",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          }
+        ],
+        "name": "ActorStatusChanged",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint32",
+            "name": "hiveCount",
+            "type": "uint32"
+          }
+        ],
+        "name": "ApiaryRegistered",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint32",
+            "name": "hiveCount",
+            "type": "uint32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint32",
+            "name": "sentinelCount",
+            "type": "uint32"
+          }
+        ],
+        "name": "ApiaryUpdated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "relayer",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "allowed",
+            "type": "bool"
+          }
+        ],
+        "name": "RelayerSet",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "apiaryOwner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          }
+        ],
+        "name": "canActAs",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          }
+        ],
+        "name": "getActor",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "enum Registry.Role",
+                "name": "role",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "agristackHash",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bool",
+                "name": "active",
+                "type": "bool"
+              },
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct Registry.Actor",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getApiary",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "geohash",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "hiveCount",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "sentinelCount",
+                "type": "uint32"
+              },
+              {
+                "internalType": "bool",
+                "name": "active",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct Registry.Apiary",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          },
+          {
+            "internalType": "enum Registry.Role",
+            "name": "role",
+            "type": "uint8"
+          }
+        ],
+        "name": "hasRole",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "isRelayer",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          },
+          {
+            "internalType": "enum Registry.Role",
+            "name": "role",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "agristackHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          }
+        ],
+        "name": "registerActor",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "geohash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "hiveCount",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "sentinelCount",
+            "type": "uint32"
+          }
+        ],
+        "name": "registerApiary",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          },
+          {
+            "internalType": "enum Registry.Role",
+            "name": "role",
+            "type": "uint8"
+          }
+        ],
+        "name": "requireActingAs",
+        "outputs": [],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          }
+        ],
+        "name": "roleOf",
+        "outputs": [
+          {
+            "internalType": "enum Registry.Role",
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "actor",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          }
+        ],
+        "name": "setActorActive",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "relayer",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "allowed",
+            "type": "bool"
+          }
+        ],
+        "name": "setRelayer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "hiveCount",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "sentinelCount",
+            "type": "uint32"
+          }
+        ],
+        "name": "updateApiary",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "YieldOracle": [
+      {
+        "inputs": [
+          {
+            "internalType": "contract Registry",
+            "name": "registry_",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "BadWindow",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "CoverageOutOfRange",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NoEvidence",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotAdmin",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotOracle",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "season",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "maxGrams",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "coverageBps",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint32",
+            "name": "revision",
+            "type": "uint32"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "evidenceHash",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "modelVersion",
+            "type": "string"
+          }
+        ],
+        "name": "EnvelopePublished",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "oracle",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "allowed",
+            "type": "bool"
+          }
+        ],
+        "name": "OracleSet",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "season",
+            "type": "bytes32"
+          }
+        ],
+        "name": "exists",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "season",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getEnvelope",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "maxGrams",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "p50Grams",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint64",
+                "name": "windowStart",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "windowEnd",
+                "type": "uint64"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "evidenceHash",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint16",
+                "name": "coverageBps",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint32",
+                "name": "revision",
+                "type": "uint32"
+              },
+              {
+                "internalType": "string",
+                "name": "modelVersion",
+                "type": "string"
+              },
+              {
+                "internalType": "bool",
+                "name": "exists",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct YieldOracle.Envelope",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "isOracle",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "season",
+            "type": "bytes32"
+          }
+        ],
+        "name": "maxGrams",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "season",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxGrams_",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "p50Grams",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint64",
+            "name": "windowStart",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "windowEnd",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "evidenceHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "coverageBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "string",
+            "name": "modelVersion",
+            "type": "string"
+          }
+        ],
+        "name": "publishEnvelope",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "registry",
+        "outputs": [
+          {
+            "internalType": "contract Registry",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "oracle",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "allowed",
+            "type": "bool"
+          }
+        ],
+        "name": "setOracle",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ],
+    "HoneyBatch": [
+      {
+        "inputs": [
+          {
+            "internalType": "contract Registry",
+            "name": "registry_",
+            "type": "address"
+          },
+          {
+            "internalType": "contract YieldOracle",
+            "name": "oracle_",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "uri_",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "BatchExists",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "BatchNotActive",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "needed",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          }
+        ],
+        "name": "ERC1155InsufficientBalance",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "approver",
+            "type": "address"
+          }
+        ],
+        "name": "ERC1155InvalidApprover",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "idsLength",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "valuesLength",
+            "type": "uint256"
+          }
+        ],
+        "name": "ERC1155InvalidArrayLength",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          }
+        ],
+        "name": "ERC1155InvalidOperator",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "receiver",
+            "type": "address"
+          }
+        ],
+        "name": "ERC1155InvalidReceiver",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "sender",
+            "type": "address"
+          }
+        ],
+        "name": "ERC1155InvalidSender",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          }
+        ],
+        "name": "ERC1155MissingApprovalForAll",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "EmptyBlend",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "requested",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "remaining",
+            "type": "uint256"
+          }
+        ],
+        "name": "ExceedsYieldEnvelope",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InsufficientBalance",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "lossBps",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16",
+            "name": "maxBps",
+            "type": "uint16"
+          }
+        ],
+        "name": "LossTooHigh",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "outputGrams",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "inputGrams",
+            "type": "uint256"
+          }
+        ],
+        "name": "MassNotConserved",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NoEnvelope",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotAdmin",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotAuthorised",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "TransfersDisabled",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "UnknownBatch",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "approved",
+            "type": "bool"
+          }
+        ],
+        "name": "ApprovalForAll",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "outputBatchId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "outputGrams",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "inputCount",
+            "type": "uint256"
+          }
+        ],
+        "name": "BatchBlended",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "reason",
+            "type": "string"
+          }
+        ],
+        "name": "BatchFlagged",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "season",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "grams",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "surplusGrams",
+            "type": "uint256"
+          }
+        ],
+        "name": "BatchMinted",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint32",
+            "name": "jars",
+            "type": "uint32"
+          }
+        ],
+        "name": "BatchPacked",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "inputBatchId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "outputBatchId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "inputGrams",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "outputGrams",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "lossGrams",
+            "type": "uint256"
+          }
+        ],
+        "name": "BatchProcessed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "grams",
+            "type": "uint256"
+          }
+        ],
+        "name": "CustodyTransferred",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "bps",
+            "type": "uint16"
+          }
+        ],
+        "name": "MaxLossBpsChanged",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256[]",
+            "name": "ids",
+            "type": "uint256[]"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256[]",
+            "name": "values",
+            "type": "uint256[]"
+          }
+        ],
+        "name": "TransferBatch",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "value",
+            "type": "uint256"
+          }
+        ],
+        "name": "TransferSingle",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "value",
+            "type": "string"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          }
+        ],
+        "name": "URI",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          }
+        ],
+        "name": "balanceOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address[]",
+            "name": "accounts",
+            "type": "address[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "ids",
+            "type": "uint256[]"
+          }
+        ],
+        "name": "balanceOfBatch",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "outputBatchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "inputBatchIds",
+            "type": "bytes32[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "inputGrams",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "outputGrams",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "processor",
+            "type": "address"
+          }
+        ],
+        "name": "blend",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "reason",
+            "type": "string"
+          }
+        ],
+        "name": "flagBatch",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getBatch",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "apiaryId",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "season",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "floralSource",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "address",
+                "name": "originalOwner",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "mintedGrams",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "surplusGrams",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint64",
+                "name": "harvestTs",
+                "type": "uint64"
+              },
+              {
+                "internalType": "enum HoneyBatch.Kind",
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "internalType": "enum HoneyBatch.Status",
+                "name": "status",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct HoneyBatch.Batch",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getComposition",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "sourceBatchId",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint256",
+                "name": "grams",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct HoneyBatch.Component[]",
+            "name": "",
+            "type": "tuple[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          }
+        ],
+        "name": "isApprovedForAll",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "jars",
+            "type": "uint32"
+          },
+          {
+            "internalType": "address",
+            "name": "packer",
+            "type": "address"
+          }
+        ],
+        "name": "markPacked",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "maxLossBps",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "season",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "grams",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "floralSource",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "harvestTs",
+            "type": "uint64"
+          }
+        ],
+        "name": "mintHarvest",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "season",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "grams",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "floralSource",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "harvestTs",
+            "type": "uint64"
+          }
+        ],
+        "name": "mintSurplus",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "season",
+            "type": "bytes32"
+          }
+        ],
+        "name": "mintedInSeason",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "oracle",
+        "outputs": [
+          {
+            "internalType": "contract YieldOracle",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "inputBatchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "outputBatchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint256",
+            "name": "inputGrams",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "outputGrams",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "processor",
+            "type": "address"
+          }
+        ],
+        "name": "processBatch",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "registry",
+        "outputs": [
+          {
+            "internalType": "contract Registry",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "apiaryId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "season",
+            "type": "bytes32"
+          }
+        ],
+        "name": "remainingInSeason",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "",
+            "type": "bytes"
+          }
+        ],
+        "name": "safeBatchTransferFrom",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes",
+            "name": "",
+            "type": "bytes"
+          }
+        ],
+        "name": "safeTransferFrom",
+        "outputs": [],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "operator",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "approved",
+            "type": "bool"
+          }
+        ],
+        "name": "setApprovalForAll",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint16",
+            "name": "bps",
+            "type": "uint16"
+          }
+        ],
+        "name": "setMaxLossBps",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "interfaceId",
+            "type": "bytes4"
+          }
+        ],
+        "name": "supportsInterface",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "totalSupplyOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "grams",
+            "type": "uint256"
+          }
+        ],
+        "name": "transferCustody",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "uri",
+        "outputs": [
+          {
+            "internalType": "string",
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "SealRegistry": [
+      {
+        "inputs": [
+          {
+            "internalType": "contract Registry",
+            "name": "registry_",
+            "type": "address"
+          },
+          {
+            "internalType": "contract HoneyBatch",
+            "name": "batches_",
+            "type": "address"
+          },
+          {
+            "internalType": "contract Attestation",
+            "name": "attestations_",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "AlreadyIssued",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NoJars",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NoPassingLabReport",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotAuthorised",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "claimedGrams_",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "availableGrams",
+            "type": "uint256"
+          }
+        ],
+        "name": "OverPacking",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "UnknownSealBatch",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint32",
+            "name": "epoch",
+            "type": "uint32"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "root",
+            "type": "bytes32"
+          }
+        ],
+        "name": "ScanEpochAnchored",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "sealRoot",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint32",
+            "name": "jarCount",
+            "type": "uint32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint32",
+            "name": "netWeightG",
+            "type": "uint32"
+          }
+        ],
+        "name": "SealsIssued",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "epoch",
+            "type": "uint32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "root",
+            "type": "bytes32"
+          }
+        ],
+        "name": "anchorScanEpoch",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "attestations",
+        "outputs": [
+          {
+            "internalType": "contract Attestation",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "batches",
+        "outputs": [
+          {
+            "internalType": "contract HoneyBatch",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "claimedGrams",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getSealBatch",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "bytes32",
+                "name": "sealRoot",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "jarCount",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "netWeightG",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint64",
+                "name": "issuedAt",
+                "type": "uint64"
+              },
+              {
+                "internalType": "address",
+                "name": "issuer",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "exists",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct SealRegistry.SealBatch",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "sealRoot",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "jarCount",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "netWeightG",
+            "type": "uint32"
+          },
+          {
+            "internalType": "address",
+            "name": "issuer",
+            "type": "address"
+          }
+        ],
+        "name": "issueSeals",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "serial",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "secret",
+            "type": "bytes32"
+          }
+        ],
+        "name": "leafOf",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "registry",
+        "outputs": [
+          {
+            "internalType": "contract Registry",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "",
+            "type": "uint32"
+          }
+        ],
+        "name": "scanEpochRoot",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "batchId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "serial",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "secret",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "proof",
+            "type": "bytes32[]"
+          }
+        ],
+        "name": "verifySeal",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "Attestation": [
+      {
+        "inputs": [
+          {
+            "internalType": "contract Registry",
+            "name": "registry_",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [],
+        "name": "AlreadyRevoked",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "KeyValueMismatch",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "NotAuthorised",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "UnknownRecord",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "recordId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "subjectId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": true,
+            "internalType": "enum Attestation.Kind",
+            "name": "kind",
+            "type": "uint8"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "issuer",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "docHash",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "bool",
+            "name": "passed",
+            "type": "bool"
+          }
+        ],
+        "name": "Attested",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "recordId",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "bytes32",
+            "name": "key",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "int256",
+            "name": "value",
+            "type": "int256"
+          }
+        ],
+        "name": "MetricSet",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint256",
+            "name": "recordId",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "reason",
+            "type": "string"
+          }
+        ],
+        "name": "Revoked",
+        "type": "event"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "enum Attestation.SubjectType",
+            "name": "subjectType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "subjectId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "enum Attestation.Kind",
+            "name": "kind",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "issuer",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "docHash",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "uint64",
+            "name": "expiresAt",
+            "type": "uint64"
+          },
+          {
+            "internalType": "bool",
+            "name": "passed",
+            "type": "bool"
+          },
+          {
+            "internalType": "bytes32[]",
+            "name": "metricKeys",
+            "type": "bytes32[]"
+          },
+          {
+            "internalType": "int256[]",
+            "name": "metricValues",
+            "type": "int256[]"
+          }
+        ],
+        "name": "attest",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "recordId",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "recordId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getRecord",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "enum Attestation.SubjectType",
+                "name": "subjectType",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "subjectId",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "enum Attestation.Kind",
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "issuer",
+                "type": "address"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "docHash",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "uint64",
+                "name": "issuedAt",
+                "type": "uint64"
+              },
+              {
+                "internalType": "uint64",
+                "name": "expiresAt",
+                "type": "uint64"
+              },
+              {
+                "internalType": "bool",
+                "name": "passed",
+                "type": "bool"
+              },
+              {
+                "internalType": "bool",
+                "name": "revoked",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct Attestation.Record",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "subjectId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "enum Attestation.Kind",
+            "name": "kind",
+            "type": "uint8"
+          }
+        ],
+        "name": "hasValid",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "name": "metric",
+        "outputs": [
+          {
+            "internalType": "int256",
+            "name": "",
+            "type": "int256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "subjectId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "recordsFor",
+        "outputs": [
+          {
+            "internalType": "uint256[]",
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "registry",
+        "outputs": [
+          {
+            "internalType": "contract Registry",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "recordId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "reason",
+            "type": "string"
+          }
+        ],
+        "name": "revoke",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "totalRecords",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ]
+  }
+}

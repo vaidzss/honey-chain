@@ -1,0 +1,42 @@
+{
+  "version": "yield-gbq-0.1.0",
+  "trained_at": "2026-09-05T19:06:02Z",
+  "features": [
+    "days_observed",
+    "gross_gain_kg",
+    "net_gain_kg",
+    "peak_weight_kg",
+    "mean_thermal_delta",
+    "min_thermal_delta",
+    "frac_regulated",
+    "mean_sound_rms",
+    "mean_centroid",
+    "mean_traffic",
+    "mean_t_out",
+    "frac_foraging_weather",
+    "start_month",
+    "n_months"
+  ],
+  "window_days": 90,
+  "train_windows": 397,
+  "test_windows": 59,
+  "quantile_metrics": {
+    "p10": {
+      "pinball": 0.4959,
+      "mean_pred": 12.51
+    },
+    "p50": {
+      "pinball": 0.835,
+      "mean_pred": 14.28
+    },
+    "p90": {
+      "pinball": 0.3829,
+      "mean_pred": 16.98
+    }
+  },
+  "p90_coverage": 1.0,
+  "p90_coverage_uncalibrated": 0.9153,
+  "calibration_factor": 1.0332,
+  "p90_mean_headroom": 0.4497,
+  "caveat": "Trained on simulated hives. The P90 becomes an on-chain mint ceiling, so before any real deployment this must be refitted on measured harvests from the target district -- a ceiling calibrated on a simulator would block real beekeepers."
+}

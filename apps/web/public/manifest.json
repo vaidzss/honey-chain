@@ -1,0 +1,13 @@
+{
+  "name": "AuraBee Beekeeper",
+  "short_name": "AuraBee",
+  "description": "Hive health, alerts and harvest recording for KVIC beekeepers",
+  "start_url": "/beekeeper",
+  "display": "standalone",
+  "background_color": "#fbfaf6",
+  "theme_color": "#d98c00",
+  "lang": "hi",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

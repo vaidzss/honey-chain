@@ -1,0 +1,86 @@
+# AuraBee local development stack.
+# Usage: npm run infra:up   (from repo root)
+name: aurabee
+
+services:
+  db:
+    image: timescale/timescaledb:latest-pg16
+    container_name: aurabee-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aurabee}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aurabee_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-aurabee}
+    ports:
+      - "5433:5432"   # 5432 is taken by another local project; container-internal port is unchanged
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      # Files here run in filename order on FIRST boot of an empty volume only.
+      # Changed the schema? `npm run infra:reset` to re-seed.
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aurabee} -d ${POSTGRES_DB:-aurabee}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: aurabee-mqtt
+    restart: unless-stopped
+    ports:
+      - "1883:1883"   # MQTT
+      - "9001:9001"   # MQTT over websockets (browser dashboards)
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mqtt_data:/mosquitto/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: aurabee-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    volumes:
+      - redis_data:/data
+
+  minio:
+    image: minio/minio:latest
+    container_name: aurabee-minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-aurabee}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-aurabee_dev}
+    ports:
+      - "9000:9000"   # S3 API
+      - "9090:9090"   # console
+    command: server /data --console-address ":9090"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Creates the media bucket on first boot, then exits. Not a long-running service.
+  minio-init:
+    image: minio/mc:latest
+    container_name: aurabee-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${S3_ACCESS_KEY:-aurabee} ${S3_SECRET_KEY:-aurabee_dev} &&
+      mc mb --ignore-existing local/${S3_BUCKET:-aurabee-media} &&
+      mc anonymous set download local/${S3_BUCKET:-aurabee-media} &&
+      echo 'minio bucket ready'
+      "
+
+volumes:
+  db_data:
+  mqtt_data:
+  redis_data:
+  minio_data:

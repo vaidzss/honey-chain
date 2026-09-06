@@ -1,0 +1,326 @@
+/* Consumer-facing styles.
+   Hand-written rather than a utility framework: the verify page is opened by a
+   phone camera in a shop, often on 3G, and shipping a CSS framework to render
+   one card is a cost someone else pays in seconds. No web fonts either --
+   system fonts render instantly and are already on the device. */
+
+:root {
+  --honey:      #d98c00;
+  --honey-dark: #a86a00;
+  --honey-tint: #fdf6e6;
+  --ink:        #1a1a17;
+  --muted:      #6b6b63;
+  --line:       #e6e2d6;
+  --bg:         #fbfaf6;
+  --ok:         #1a7f4b;
+  --ok-tint:    #e8f5ee;
+  --warn:       #a86a00;
+  --warn-tint:  #fdf3e0;
+  --bad:        #b3261e;
+  --bad-tint:   #fdeceb;
+  --radius:     12px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+.wrap { max-width: 560px; margin: 0 auto; padding: 16px 16px 64px; }
+
+header.brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 0 14px;
+}
+header.brand .mark {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--honey); color: #fff;
+  display: grid; place-items: center; font-size: 17px;
+}
+header.brand h1 { font-size: 17px; margin: 0; letter-spacing: -0.01em; }
+header.brand .sub { font-size: 12px; color: var(--muted); margin: 0; }
+
+/* --- verdict banner ---------------------------------------------------- */
+.verdict {
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+  border: 1px solid transparent;
+}
+.verdict h2 { margin: 0 0 4px; font-size: 20px; letter-spacing: -0.01em; }
+.verdict p  { margin: 0; font-size: 14px; line-height: 1.5; }
+.verdict.ok   { background: var(--ok-tint);   border-color: #b8e0cb; color: #0f5c35; }
+.verdict.warn { background: var(--warn-tint); border-color: #f0d9a8; color: #7a4d00; }
+.verdict.bad  { background: var(--bad-tint);  border-color: #f3c4c1; color: #8c1d17; }
+.verdict.idle { background: #fff; border-color: var(--line); }
+
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.card h3 {
+  margin: 0 0 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* --- origin bars ------------------------------------------------------- */
+.origin { margin-bottom: 14px; }
+.origin:last-child { margin-bottom: 0; }
+.origin .row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 12px; margin-bottom: 5px;
+}
+.origin .place { font-weight: 600; font-size: 15px; }
+.origin .pct { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--honey-dark); }
+.origin .who { font-size: 13px; color: var(--muted); }
+.bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+.bar > i { display: block; height: 100%; background: var(--honey); }
+
+/* --- journey ----------------------------------------------------------- */
+.journey { list-style: none; margin: 0; padding: 0; }
+.journey li {
+  position: relative;
+  padding: 0 0 18px 22px;
+  border-left: 2px solid var(--line);
+}
+.journey li:last-child { padding-bottom: 0; border-left-color: transparent; }
+.journey li::before {
+  content: ""; position: absolute; left: -6px; top: 4px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--honey); border: 2px solid #fff;
+}
+.journey .step { font-weight: 600; font-size: 14px; text-transform: capitalize; }
+.journey .detail { font-size: 13px; color: var(--muted); }
+.journey .tx { font-size: 11px; color: #9a978c; font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
+
+/* --- key/value --------------------------------------------------------- */
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 7px 16px; font-size: 14px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* --- warnings ---------------------------------------------------------- */
+.flag {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px; border-radius: 10px; margin-bottom: 8px; font-size: 14px;
+}
+.flag:last-child { margin-bottom: 0; }
+.flag.critical { background: var(--bad-tint);  color: #8c1d17; }
+.flag.warn     { background: var(--warn-tint); color: #7a4d00; }
+.flag .icon { flex: 0 0 auto; font-size: 15px; line-height: 1.4; }
+
+/* --- secret form ------------------------------------------------------- */
+form.secret { display: flex; gap: 8px; }
+form.secret input {
+  flex: 1; min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line); border-radius: 10px;
+  font-size: 16px; /* 16px stops iOS zooming the page on focus */
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  background: #fff; color: var(--ink);
+}
+form.secret button {
+  padding: 12px 18px; border: 0; border-radius: 10px;
+  background: var(--honey); color: #fff; font-size: 15px; font-weight: 600;
+  cursor: pointer;
+}
+form.secret button:active { background: var(--honey-dark); }
+.hint { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+
+.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; }
+.footer { text-align: center; font-size: 12px; color: var(--muted); margin-top: 26px; line-height: 1.6; }
+.footer a { color: var(--muted); }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f0eee6; --muted: #9d9a90; --line: #33322c;
+    --bg: #16150f; --honey-tint: #241d0d;
+    --ok-tint: #10281c; --warn-tint: #2a2010; --bad-tint: #2b1412;
+  }
+  .card, form.secret input, .verdict.idle { background: #1e1d16; }
+  .verdict.ok   { color: #7fd3a5; border-color: #1d4632; }
+  .verdict.warn { color: #e5b768; border-color: #4a3a19; }
+  .verdict.bad  { color: #f0a9a3; border-color: #56241f; }
+  .flag.critical { color: #f0a9a3; }
+  .flag.warn     { color: #e5b768; }
+}
+
+/* ===================================================================== */
+/* Beekeeper app                                                          */
+/* Bigger targets, higher contrast, fewer words than the consumer page.   */
+/* The user is outdoors, in sunlight, possibly wearing gloves, on a       */
+/* phone that cost less than one bee box.                                */
+/* ===================================================================== */
+
+.bk-top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 14px;
+}
+.bk-top h2 { margin: 0; font-size: 19px; letter-spacing: -0.01em; }
+.bk-top .who { font-size: 13px; color: var(--muted); margin: 2px 0 0; }
+
+.lang { display: flex; gap: 4px; flex: 0 0 auto; }
+.lang a {
+  padding: 7px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  text-decoration: none; color: var(--muted); border: 1px solid var(--line);
+  background: #fff;
+}
+.lang a.on { background: var(--honey); color: #fff; border-color: var(--honey); }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+.stat {
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px 10px; text-align: center;
+}
+.stat b { display: block; font-size: 24px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 11px; color: var(--muted); }
+.stat.bad b { color: var(--bad); }
+.stat.warn b { color: var(--warn); }
+
+/* alerts: the most important thing on the screen */
+.alert {
+  display: block; text-decoration: none; color: inherit;
+  border-radius: var(--radius); padding: 14px; margin-bottom: 10px;
+  border-left: 5px solid var(--warn); background: var(--warn-tint);
+}
+.alert.critical { border-left-color: var(--bad); background: var(--bad-tint); }
+.alert .hive { font-weight: 700; font-size: 15px; margin-bottom: 3px; }
+.alert .what { font-size: 15px; line-height: 1.45; }
+.alert .meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+/* hive grid */
+.hives { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.hive {
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  padding: 12px 8px; text-align: center; position: relative;
+}
+.hive .label { font-weight: 600; font-size: 14px; }
+.hive .dot {
+  width: 9px; height: 9px; border-radius: 50%; display: inline-block;
+  margin-right: 5px; vertical-align: 1px;
+}
+.hive .dot.ok { background: var(--ok); }
+.hive .dot.alert { background: var(--bad); }
+.hive .dot.none { background: var(--line); }
+.hive .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+/* harvest declaration */
+.envelope {
+  background: linear-gradient(180deg, var(--honey-tint), #fff);
+  border: 1px solid #f0dca8; border-radius: var(--radius);
+  padding: 18px; margin-bottom: 14px;
+}
+.envelope .allowed { font-size: 34px; font-weight: 700; line-height: 1; color: var(--honey-dark); }
+.envelope .allowed small { font-size: 16px; font-weight: 600; }
+.envelope .cap { font-size: 14px; color: var(--muted); margin: 8px 0 0; line-height: 1.5; }
+.meter { height: 10px; background: #fff; border: 1px solid var(--line); border-radius: 99px; margin: 14px 0 6px; overflow: hidden; }
+.meter > i { display: block; height: 100%; background: var(--honey); }
+.meter-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+
+.big-input {
+  width: 100%; padding: 16px; font-size: 22px; font-weight: 600;
+  border: 2px solid var(--line); border-radius: 10px; text-align: center;
+  background: #fff; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+.big-btn {
+  width: 100%; padding: 16px; border: 0; border-radius: 10px; margin-top: 10px;
+  background: var(--honey); color: #fff; font-size: 17px; font-weight: 700;
+}
+.big-btn:disabled { background: var(--line); color: var(--muted); }
+
+.offline-note {
+  font-size: 12px; color: var(--muted); text-align: center;
+  padding: 10px; border: 1px dashed var(--line); border-radius: 10px; margin-top: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .stat, .hive, .lang a, .big-input { background: #1e1d16; }
+  .envelope { background: #241d0d; border-color: #4a3a19; }
+  .meter { background: #16150f; }
+}
+
+/* ===================================================================== */
+/* Consoles, metrics and proof                                            */
+/* Desktop-first: these are read at a table, not in a field.             */
+/* ===================================================================== */
+
+.wide { max-width: 1080px; }
+
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+
+table.tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.tbl th {
+  text-align: left; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--muted); font-weight: 600;
+  padding: 8px 10px; border-bottom: 1px solid var(--line);
+}
+table.tbl td { padding: 9px 10px; border-bottom: 1px solid var(--line); }
+table.tbl tr:last-child td { border-bottom: 0; }
+table.tbl td.num { text-align: right; font-variant-numeric: tabular-nums; }
+table.tbl tr.warn td { background: var(--warn-tint); }
+table.tbl tr.bad td  { background: var(--bad-tint); }
+
+.pill {
+  display: inline-block; padding: 3px 9px; border-radius: 99px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+}
+.pill.ok   { background: var(--ok-tint);   color: var(--ok); }
+.pill.warn { background: var(--warn-tint); color: var(--warn); }
+.pill.bad  { background: var(--bad-tint);  color: var(--bad); }
+.pill.mute { background: var(--line);      color: var(--muted); }
+
+/* metric cards */
+.metric { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
+.metric .v { font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.metric .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+
+.barrow { display: grid; grid-template-columns: 120px 1fr 54px; gap: 10px; align-items: center; margin-bottom: 7px; font-size: 13px; }
+.barrow .track { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.barrow .track > i { display: block; height: 100%; background: var(--honey); }
+.barrow .track > i.good { background: var(--ok); }
+.barrow .track > i.poor { background: var(--bad); }
+.barrow .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+
+.caveat {
+  border-left: 3px solid var(--warn); background: var(--warn-tint);
+  padding: 11px 13px; border-radius: 0 8px 8px 0; font-size: 13px;
+  line-height: 1.55; margin-top: 12px;
+}
+
+/* proof claims */
+.claim { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; background: #fff; }
+.claim.holds { border-left: 4px solid var(--ok); }
+.claim.broken { border-left: 4px solid var(--bad); }
+.claim .title { font-weight: 600; font-size: 15px; display: flex; justify-content: space-between; gap: 10px; }
+.claim .math { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; margin-top: 8px; color: var(--ink); }
+.claim .src { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.hashline { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; color: var(--muted); word-break: break-all; }
+
+nav.consolenav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+nav.consolenav a {
+  font-size: 13px; padding: 7px 12px; border-radius: 8px; text-decoration: none;
+  border: 1px solid var(--line); color: var(--muted); background: #fff;
+}
+nav.consolenav a.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+@media (prefers-color-scheme: dark) {
+  .metric, .claim, table.tbl, nav.consolenav a { background: #1e1d16; }
+}
+
+/* Consoles need room. :has() lets the shared shell widen itself for
+   pages that opt in, without the root layout needing to know the route. */
+.wrap:has(.wide-content) { max-width: 1080px; }

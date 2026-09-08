@@ -1,0 +1,58 @@
+{
+  "version": "acoustic-queen-0.1.0",
+  "trained_at": "2026-09-08T14:19:45Z",
+  "dataset": "To bee or not to bee (Nolasco & Benetos 2018), CC BY 4.0",
+  "dataset_doi": "10.5281/zenodo.1321278",
+  "attribution": "Nolasco, I. & Benetos, E. (2018). Zenodo. https://doi.org/10.5281/zenodo.1321278 (CC BY 4.0)",
+  "species": "Apis mellifera",
+  "windows": 6705,
+  "recordings": 7,
+  "window_seconds": 3.0,
+  "sample_rate": 16000,
+  "deployable": false,
+  "majority_baseline": 0.5104,
+  "headline_accuracy_loro": 0.2778,
+  "queenless_recall": 0.4479,
+  "queenright_recall": 0.0191,
+  "macro_f1": 0.2243,
+  "auc": 0.2335,
+  "naive_random_split_accuracy": 0.9922,
+  "leakage_gap": 0.7144,
+  "per_hive": [
+    {
+      "hive": "Hive1",
+      "n": 2529,
+      "n_queenright": 1816,
+      "n_queenless": 713,
+      "accuracy": 0.2736,
+      "mean_p_queenright": 0.0168
+    },
+    {
+      "hive": "Hive3",
+      "n": 2625,
+      "n_queenright": 228,
+      "n_queenless": 2397,
+      "accuracy": 0.2819,
+      "mean_p_queenright": 0.6727
+    }
+  ],
+  "testable_hives": [
+    "Hive1",
+    "Hive3"
+  ],
+  "train_only_single_class_hives": {
+    "CF003": "queenright",
+    "CJ001": "queenless"
+  },
+  "evaluation": "Leave-one-HIVE-out, restricted to hives that appear in both queen states. Queen state is otherwise confounded with hive, session, microphone and background noise. Of the four hives in this corpus only two (Hive1, Hive3) ever appear in both conditions; CF003 is queenright-only and CJ001 queenless-only, so a fold testing on either would measure hive recognition rather than queen detection. Those two are kept as training data.",
+  "feature_ablation_loro": {
+    "all_63_features": 0.278,
+    "drop_absolute_mfcc_means": 0.274,
+    "normalised_spectral_shape_only": 0.273,
+    "per_hive_cepstral_mean_subtraction": 0.315
+  },
+  "finding": "Cross-hive queen detection FAILS on this corpus. Every feature variant scores 0.27-0.32 against a 0.51 majority baseline, while a random split of 3-second windows scores 0.992. The gap is the recording session, not the bees.",
+  "why_below_chance": "Not because the signal is inverted. The model's predictions track the TRAINING PRIOR and ignore the held-out colony: holding out Hive1 the train prior is P(queenright)=0.351 and the model predicts 0.008 against a true 0.718; holding out Hive3 the prior is 0.749 and it predicts 0.661 against a true 0.087. It learned nothing that transfers and fell back to the prior, and each held-out hive's class balance happens to be inverted relative to that prior. Sub-50% is an artifact of that, not evidence of an inverted cue.",
+  "why_not_shipped": "We do not ship a model that loses to a coin flip. The deployed queenless detector remains the telemetry classifier in ml/train_health.py, which is simulator-trained and labelled as such. Real-audio queen detection needs recordings from multiple hives in BOTH states -- this corpus has only two such hives, and collecting that data is a stated goal of the pilot.",
+  "caveat": "REAL audio, Apis mellifera, European hives. The naive random-split accuracy is reported only to show the size of the leakage a careless split would have produced -- it is not a result. Only two of the four hives appear in both queen states, so the cross-hive test has n=2 and is evidence about this dataset rather than a general claim about bee acoustics. No Apis cerana indica audio exists publicly at all."
+}

@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "policy": [
+    "Every dataset MUST declare a license id, a resolvable source (DOI or URL) and an attribution string.",
+    "fetch_datasets.py REFUSES to download any entry missing those fields. Licensing is enforced in code, not promised in prose.",
+    "Datasets whose license forbids commercial use are marked commercial_use=false and MUST NOT be used to train anything shipped in a commercial deployment. They are kept for research comparison only.",
+    "Rejected sources are recorded below with the reason, so the same evaluation is not repeated."
+  ],
+  "datasets": {
+    "beehive_sounds_nolasco": {
+      "title": "To bee or not to bee: an annotated dataset for beehive sound recognition",
+      "creators": "Nolasco, Inês; Benetos, Emmanouil",
+      "year": 2018,
+      "doi": "10.5281/zenodo.1321278",
+      "zenodo_record": 1321278,
+      "license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial_use": true,
+      "attribution": "Nolasco, I. & Benetos, E. (2018). To bee or not to bee: an annotated dataset for beehive sound recognition. Zenodo. https://doi.org/10.5281/zenodo.1321278 (CC BY 4.0)",
+      "approx_gb": 3.72,
+      "include_ext": [".wav", ".lab"],
+      "species": "Apis mellifera",
+      "used_for": "Real-audio queen-presence classifier (ml/train_acoustic.py). Derived from the OSBH and NU-Hive projects.",
+      "known_confound": "Queen state is confounded with recording session and device: each hive-day is entirely queenright or entirely queenless. A random segment split leaks the session and produces a meaningless near-perfect score. Evaluation must group by recording."
+    },
+    "varroa_schurischuster": {
+      "title": "VarroaDataset",
+      "creators": "Schurischuster, Stefan; Kampel, Martin",
+      "year": 2020,
+      "doi": "10.5281/zenodo.4085043",
+      "zenodo_record": 4085044,
+      "license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial_use": true,
+      "attribution": "Schurischuster, S. & Kampel, M. (2020). VarroaDataset. Zenodo. https://doi.org/10.5281/zenodo.4085043 (CC BY 4.0)",
+      "approx_gb": 1.16,
+      "include_ext": [".zip", ".csv"],
+      "species": "Apis mellifera",
+      "used_for": "Real varroa-infestation image classifier (ml/train_varroa_cnn.py). ~13,500 annotations, 3,947 infested / 9,562 healthy, 160x280 px, controlled lighting.",
+      "known_confound": "Recorded in a controlled and constant environment at a hive entrance. It is not a sticky-board dataset and does not resemble a phone photo taken in an Indian apiary; it validates mite appearance, not our field capture path."
+    },
+    "mspb_quebec": {
+      "title": "MSPB: a longitudinal multi-sensor dataset with phenotypic trait measurements from honey bees",
+      "creators": "Sperandio, G.; et al.",
+      "year": 2024,
+      "doi": "10.5281/zenodo.8371700",
+      "zenodo_record": 11398835,
+      "license": "CC-BY-NC-4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+      "commercial_use": false,
+      "attribution": "MSPB: a longitudinal multi-sensor dataset with phenotypic trait measurements from honey bees. Zenodo. https://doi.org/10.5281/zenodo.8371700 (CC BY-NC 4.0)",
+      "approx_gb": 0.43,
+      "include_ext": [".csv", ".xlsx", ".pdf"],
+      "species": "Apis mellifera",
+      "used_for": "Real colony-level validation: 53 hives in Quebec, one year, with measured Varroa destructor infestation levels, honey yield and winter mortality alongside temperature/humidity.",
+      "restriction": "NON-COMMERCIAL. Usable for research and for this hackathon; must not train a model shipped commercially without separate permission from the authors."
+    }
+  },
+  "rejected": {
+    "bob_germany_weights": {
+      "title": "Weight, Temperature and Humidity Sensor Data of Honey Bee Colonies in Germany, 2019-2022",
+      "zenodo_record": 10407693,
+      "approx_gb": 9.83,
+      "reason": "NO LICENSE DECLARED on the Zenodo record. This is the best real hive-weight source found -- 78 colonies, three years, scale plus five in-hive temperature sensors, exactly what the yield forecaster needs -- and it is unusable because open access is not the same as a licence to use. Revisit only if the authors add one or grant permission.",
+      "would_be_used_for": "Refitting the yield forecaster on real hive weight instead of simulated weight."
+    },
+    "beedataset_beealarmed": {
+      "source": "https://github.com/BeeAlarmed/BeeDataset",
+      "license": "GPL-3.0",
+      "reason": "GPL-3.0 applied to a dataset rather than to code. Its copyleft obligations on 'derived works' are legally unclear when the derived work is a trained model, and we will not put a model of uncertain provenance behind an on-chain gate. VarroaDataset (CC BY 4.0) covers the same task cleanly.",
+      "would_be_used_for": "Varroa / pollen / cooling multilabel classification."
+    },
+    "kaggle_sets": {
+      "source": "Kaggle: Smart Bee Colony Monitor, BeeTogether, BeeImage",
+      "reason": "Require an authenticated Kaggle API token this environment does not have, and per-dataset licences vary and must be checked individually rather than assumed from the platform. Deferred, not dismissed.",
+      "would_be_used_for": "Additional acoustic volume and a second opinion on queen detection."
+    }
+  }
+}

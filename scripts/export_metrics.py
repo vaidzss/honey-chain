@@ -112,10 +112,16 @@ def bar_chart_png(path: Path, title: str, rows: list[tuple[str, float]], *,
             d.text((bx - lw / 2, bottom + 3 * SS), baseline_label,
                    font=f_small, fill=MUTED)
 
-    for i, (label, value) in enumerate(rows):
+    for i, row in enumerate(rows):
+        # A row may force its own colour. That exists for bars which are NOT
+        # results -- a leaked score shown for comparison must never be painted
+        # green just because the number is high, or the chart argues the
+        # opposite of its caption.
+        label, value = row[0], row[1]
+        override = row[2] if len(row) > 2 else None
         y = (pad_top + i * row_h) * SS
         v = max(0.0, min(1.0, float(value)))
-        colour = GREEN if v >= good else HONEY if v >= poor else RED
+        colour = override or (GREEN if v >= good else HONEY if v >= poor else RED)
         bar_h = 14 * SS
         radius = bar_h // 2
 
@@ -136,6 +142,12 @@ def bar_chart_png(path: Path, title: str, rows: list[tuple[str, float]], *,
 
 
 # --------------------------------------------------------------------------
+def read_json(path: Path) -> dict | None:
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def read_meta(name: str) -> dict | None:
     p = MODELS / name
     if not p.exists():
@@ -158,8 +170,36 @@ def run_ledger_check() -> dict:
                 batches = int(bits[0])
                 held = int(bits[2])
                 broken = int(bits[-2])
+        # A verifier that could not reach the stack has NOT found broken
+        # invariants -- it has found nothing. Recording that as
+        # all_hold=false/0 batches reads like the ledger failed, which is a
+        # different and much worse claim, so it is kept distinct. The last
+        # successful verdict is preserved rather than overwritten by a run
+        # that never connected.
+        if r.returncode != 0 and batches == 0:
+            prev = read_json(OUT / "ledger_verification.json") or {}
+            # Carry the last GOOD verdict forward. If the previous file was
+            # itself a failed run, take the record it was already carrying --
+            # otherwise every re-export with the stack down erodes the history
+            # by one step until the evidence is gone.
+            stale = {k: v for k, v in prev.items()
+                     if k in ("batches_checked", "invariants_held",
+                              "invariants_broken", "all_hold", "verified_at")}
+            if not stale:
+                stale = prev.get("last_successful_run") or {}
+            return {
+                "ran": False,
+                "reason": "could not reach the chain or database; the stack "
+                          "was not running when metrics were exported",
+                "not_a_verification_failure": True,
+                "exit_code": r.returncode,
+                "stderr_tail": (r.stderr or "").strip().splitlines()[-1:],
+                "last_successful_run": stale or None,
+                "reproduce": "start the stack, then: python scripts/verify_ledger.py",
+            }
         return {
             "ran": True,
+            "verified_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "exit_code": r.returncode,
             "batches_checked": batches,
             "invariants_held": held,
@@ -185,6 +225,12 @@ def main() -> int:
         if (OUT / "sensor_ablation.json").exists() else None
     varroa = json.loads((OUT / "varroa_counter.json").read_text()) \
         if (OUT / "varroa_counter.json").exists() else None
+
+    # Models trained on REAL, licensed data. Kept in a block separate from the
+    # simulator models everywhere downstream, because merging the two would let
+    # a simulator number quietly borrow credibility from a real one.
+    acoustic = read_json(OUT / "acoustic_queen.json")
+    varroa_cnn = read_json(OUT / "varroa_entrance_cnn.json")
 
     # copy the per-model metadata in under stable names
     for meta, fname in ((health, "colony_health.json"),
@@ -235,6 +281,21 @@ def main() -> int:
             good=0.80, poor=0.60)
         charts.append("sensor_ablation.png")
 
+    if acoustic:
+        bar_chart_png(
+            OUT / "acoustic_queen.png",
+            "Queen detection on REAL audio",
+            [("leave-one-hive-out", acoustic["headline_accuracy_loro"]),
+             ("queenless recall", acoustic["queenless_recall"]),
+             ("majority baseline", acoustic["majority_baseline"], MUTED),
+             ("random split - LEAKED", acoustic["naive_random_split_accuracy"],
+              MUTED)],
+            subtitle="grey bars are not results: the baseline to beat, and the "
+                     "score data leakage would have produced",
+            good=0.85, poor=0.65,
+            baseline=0.5, baseline_label="0.5 = chance")
+        charts.append("acoustic_queen.png")
+
     # ---- combined index --------------------------------------------------
     index = {
         "generated_at": stamp,
@@ -244,15 +305,28 @@ def main() -> int:
             "anomaly_detector": anomaly,
             "varroa_counter": varroa,
         },
+        "models_trained_on_real_data": {
+            "acoustic_queen": acoustic,
+            "varroa_entrance_cnn": varroa_cnn,
+        },
+        "datasets": read_json(ROOT / "ml/datasets/registry.json"),
+        "mspb_colony": read_json(OUT / "mspb_colony.json"),
         "sensor_ablation": ablation,
         "ledger_verification": ledger,
         "charts": charts,
         "global_caveat": (
-            "Every model number here was measured on SIMULATED hives. It shows "
-            "the models learned the physics the simulator encodes; it is not "
-            "evidence they work on real bees. Most public bee acoustics are "
-            "Apis mellifera, and Apis cerana indica -- common in Indian "
-            "beekeeping -- is a further gap with no public dataset."),
+            "Read the two halves of this file differently. Everything above the "
+            "'REAL, licensed data' heading was measured on SIMULATED hives: it "
+            "shows the models learned the physics the simulator encodes, and is "
+            "not evidence they work on real bees. Everything below it was "
+            "measured on real colonies, and two of those three results are "
+            "negative -- reported because a folder that only records what "
+            "worked is advertising.\n\n"
+            "The gap that remains after both halves is the same one: every real "
+            "dataset available is Apis mellifera in Europe or Canada. Apis "
+            "cerana indica, common in Indian beekeeping, has NO public dataset "
+            "at all, and the yield ceiling that gates a beekeeper's income has "
+            "still never been fitted against a real Indian harvest."),
     }
     (OUT / "index.json").write_text(json.dumps(index, indent=2), encoding="utf-8")
 
@@ -410,6 +484,53 @@ def build_readme(ix: dict) -> str:
                          f"{c['error']:+d} |")
         L += ["", v.get("caveat", ""), ""]
 
+    # ---- models trained on real, licensed data --------------------------
+    real = ix.get("models_trained_on_real_data") or {}
+    aq, vc, mspb = (real.get("acoustic_queen"), real.get("varroa_entrance_cnn"),
+                    ix.get("mspb_colony"))
+    if any((aq, vc, mspb)):
+        L += ["---", "", "## Models trained on REAL, licensed data", "",
+              "Kept separate from everything above, which is simulator-trained. "
+              "Dataset licences and the sources we rejected are in "
+              "[`ml/datasets/registry.json`](../ml/datasets/registry.json).", ""]
+
+    if vc:
+        L += [f"### Varroa on real bee images — `{vc['version']}`", "",
+              f"- **{vc['test_accuracy']:.1%}** accuracy, "
+              f"**AUC {vc['test_auc']:.3f}** on {vc['test_images']:,} held-out "
+              f"images from {vc['test_sessions']} unseen recording sessions.",
+              f"- Infested recall {vc['infested_recall']:.3f}, "
+              f"precision {vc['infested_precision']:.3f}.",
+              f"- Data: {vc['dataset']}", "",
+              vc["label_note"], "", vc["caveat"], ""]
+
+    if aq:
+        verdict = "SHIPPED" if aq.get("deployable") else "**NOT SHIPPED**"
+        L += [f"### Queen detection on real audio — {verdict}", "",
+              f"- Leave-one-hive-out accuracy **{aq['headline_accuracy_loro']:.3f}** "
+              f"against a **{aq['majority_baseline']:.3f}** majority baseline.",
+              f"- A random split of the same windows scores "
+              f"**{aq['naive_random_split_accuracy']:.3f}** — a leakage gap of "
+              f"**{aq['leakage_gap']:+.3f}**.",
+              f"- Data: {aq['dataset']}", "",
+              aq["finding"], "", aq["why_below_chance"], "",
+              aq["why_not_shipped"], "",
+              "![queen](acoustic_queen.png)", ""]
+
+    if mspb:
+        L += ["### Colony-level check on real hives (MSPB)", "",
+              f"- {mspb['colonies_joined']} colonies, "
+              f"{mspb['features']} features. **{mspb['licence_restriction']}**", ""]
+        L += ["| Target | n | model MAE | baseline MAE | R² | verdict |",
+              "|---|---|---|---|---|---|"]
+        for k, r in (mspb.get("results") or {}).items():
+            L += [f"| {k} ({r['unit']}) | {r['n_colonies']} | {r['mae']} | "
+                  f"{r['baseline_mae']} | {r['r2']} | "
+                  f"{'beats baseline' if r['beats_baseline'] else '**no better than the mean**'} |"]
+        L += ["", mspb["what_this_does_and_does_not_say"], "",
+              mspb["why_we_did_not_keep_tuning"], "",
+              f"*Bug found and fixed:* {mspb['bug_found_and_fixed']}", ""]
+
     L += ["---", "", "## Ledger verification", ""]
     if lg.get("ran"):
         verdict = "**all held**" if lg.get("all_hold") else "**FAILURES**"
@@ -425,7 +546,14 @@ def build_readme(ix: dict) -> str:
               "",
               "Reproduce with `python scripts/verify_ledger.py`.", ""]
     else:
-        L += [f"- Not run: {lg.get('error', 'unknown')}", f"- {lg.get('note')}", ""]
+        L += [f"- **Not run** — {lg.get('reason', lg.get('error', 'unknown'))}.",
+              "- This is *not* a verification failure: nothing was checked.",
+              f"- Reproduce: `{lg.get('reproduce', 'python scripts/verify_ledger.py')}`", ""]
+        last = lg.get("last_successful_run")
+        if last:
+            L += [f"- Last successful run: {last.get('batches_checked')} batches, "
+                  f"{last.get('invariants_held')} invariants held, "
+                  f"{last.get('invariants_broken')} broken.", ""]
 
     L += ["---", "", "## Caveat", "", ix["global_caveat"], ""]
     return "\n".join(L)

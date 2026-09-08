@@ -1,0 +1,22 @@
+{
+  "version": "varroa-entrance-cnn-0.1.0",
+  "trained_at": "2026-09-08T14:45:25Z",
+  "dataset": "VarroaDataset (Schurischuster & Kampel 2020), CC BY 4.0",
+  "dataset_doi": "10.5281/zenodo.4085043",
+  "attribution": "Schurischuster, S. & Kampel, M. (2020). VarroaDataset. Zenodo. https://doi.org/10.5281/zenodo.4085043 (CC BY 4.0)",
+  "task": "binary infested/healthy for one bee imaged at a hive entrance",
+  "architecture": "4-block CNN, 112x192 RGB, ~0.3M params, CPU-trained",
+  "train_images": 8225,
+  "val_images": 1876,
+  "test_images": 3408,
+  "test_sessions": 2,
+  "test_accuracy": 0.8926,
+  "test_auc": 0.9213,
+  "infested_recall": 0.6847,
+  "infested_precision": 0.9034,
+  "healthy_recall": 0.972,
+  "macro_f1": 0.854,
+  "label_note": "gt.csv uses TWO positive ids, 1 (3,083) and 3 (864); the dataset README documents only 0 and 1. Merging them reproduces the published 3,947 infected / 9,562 healthy exactly. Training on `label == 1` alone would discard 22% of the positives.",
+  "split_note": "The dataset's own train/val/test split is used because it is session-disjoint, which we verified. bee_id appears to overlap train and test but is only unique within a session, so it is not leakage. The test set is 2 recording sessions.",
+  "caveat": "REAL images, Apis mellifera, controlled lighting at a hive entrance in Europe. This is an ENTRANCE-CAMERA model and does NOT replace the sticky-board counter in apps/api/aurabee_api/varroa.py -- different sensor, different question. It has never seen an Indian apiary or a phone photo."
+}

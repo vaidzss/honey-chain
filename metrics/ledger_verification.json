@@ -1,9 +1,16 @@
 {
-  "ran": true,
-  "exit_code": 0,
-  "batches_checked": 16,
-  "invariants_held": 25,
-  "invariants_broken": 0,
-  "all_hold": true,
-  "note": "Verified against chain state alone. The database supplied only the list of batch codes; every value was read from the deployed contracts."
+  "ran": false,
+  "reason": "could not reach the chain or database; the stack was not running when metrics were exported",
+  "not_a_verification_failure": true,
+  "exit_code": 1,
+  "stderr_tail": [
+    "no chain at http://localhost:8545"
+  ],
+  "last_successful_run": {
+    "batches_checked": 16,
+    "invariants_held": 25,
+    "invariants_broken": 0,
+    "all_hold": true
+  },
+  "reproduce": "start the stack, then: python scripts/verify_ledger.py"
 }

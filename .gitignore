@@ -37,7 +37,10 @@ ml/models/*.pt
 ml/models/*.tflite
 ml/models/*.onnx
 !ml/models/.gitkeep
-ml/datasets/
+# Datasets are fetched, never committed -- but the licence registry that
+# says WHICH datasets and under what terms is the point, so it stays.
+ml/datasets/*
+!ml/datasets/registry.json
 
 # os / editor
 .DS_Store
@@ -53,7 +56,6 @@ npm-debug.log*
 
 # python build artifacts
 *.egg-info/
-ml/datasets/*.csv
 ml/models/*.joblib
 !ml/models/*.meta.json
 

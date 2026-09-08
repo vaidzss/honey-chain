@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-05T20:45:27Z",
+  "generated_at": "2026-09-08T14:53:11Z",
   "models": {
     "colony_health": {
       "version": "health-hgb-0.1.0",
@@ -276,6 +276,218 @@
       "caveat": "Measured against SYNTHETIC boards with known counts. This validates the algorithm's mechanics and serves as a regression test; it is NOT field accuracy. There is no annotated Indian sticky-board dataset to measure that against yet."
     }
   },
+  "models_trained_on_real_data": {
+    "acoustic_queen": {
+      "version": "acoustic-queen-0.1.0",
+      "trained_at": "2026-09-08T14:19:45Z",
+      "dataset": "To bee or not to bee (Nolasco & Benetos 2018), CC BY 4.0",
+      "dataset_doi": "10.5281/zenodo.1321278",
+      "attribution": "Nolasco, I. & Benetos, E. (2018). Zenodo. https://doi.org/10.5281/zenodo.1321278 (CC BY 4.0)",
+      "species": "Apis mellifera",
+      "windows": 6705,
+      "recordings": 7,
+      "window_seconds": 3.0,
+      "sample_rate": 16000,
+      "deployable": false,
+      "majority_baseline": 0.5104,
+      "headline_accuracy_loro": 0.2778,
+      "queenless_recall": 0.4479,
+      "queenright_recall": 0.0191,
+      "macro_f1": 0.2243,
+      "auc": 0.2335,
+      "naive_random_split_accuracy": 0.9922,
+      "leakage_gap": 0.7144,
+      "per_hive": [
+        {
+          "hive": "Hive1",
+          "n": 2529,
+          "n_queenright": 1816,
+          "n_queenless": 713,
+          "accuracy": 0.2736,
+          "mean_p_queenright": 0.0168
+        },
+        {
+          "hive": "Hive3",
+          "n": 2625,
+          "n_queenright": 228,
+          "n_queenless": 2397,
+          "accuracy": 0.2819,
+          "mean_p_queenright": 0.6727
+        }
+      ],
+      "testable_hives": [
+        "Hive1",
+        "Hive3"
+      ],
+      "train_only_single_class_hives": {
+        "CF003": "queenright",
+        "CJ001": "queenless"
+      },
+      "evaluation": "Leave-one-HIVE-out, restricted to hives that appear in both queen states. Queen state is otherwise confounded with hive, session, microphone and background noise. Of the four hives in this corpus only two (Hive1, Hive3) ever appear in both conditions; CF003 is queenright-only and CJ001 queenless-only, so a fold testing on either would measure hive recognition rather than queen detection. Those two are kept as training data.",
+      "feature_ablation_loro": {
+        "all_63_features": 0.278,
+        "drop_absolute_mfcc_means": 0.274,
+        "normalised_spectral_shape_only": 0.273,
+        "per_hive_cepstral_mean_subtraction": 0.315
+      },
+      "finding": "Cross-hive queen detection FAILS on this corpus. Every feature variant scores 0.27-0.32 against a 0.51 majority baseline, while a random split of 3-second windows scores 0.992. The gap is the recording session, not the bees.",
+      "why_below_chance": "Not because the signal is inverted. The model's predictions track the TRAINING PRIOR and ignore the held-out colony: holding out Hive1 the train prior is P(queenright)=0.351 and the model predicts 0.008 against a true 0.718; holding out Hive3 the prior is 0.749 and it predicts 0.661 against a true 0.087. It learned nothing that transfers and fell back to the prior, and each held-out hive's class balance happens to be inverted relative to that prior. Sub-50% is an artifact of that, not evidence of an inverted cue.",
+      "why_not_shipped": "We do not ship a model that loses to a coin flip. The deployed queenless detector remains the telemetry classifier in ml/train_health.py, which is simulator-trained and labelled as such. Real-audio queen detection needs recordings from multiple hives in BOTH states -- this corpus has only two such hives, and collecting that data is a stated goal of the pilot.",
+      "caveat": "REAL audio, Apis mellifera, European hives. The naive random-split accuracy is reported only to show the size of the leakage a careless split would have produced -- it is not a result. Only two of the four hives appear in both queen states, so the cross-hive test has n=2 and is evidence about this dataset rather than a general claim about bee acoustics. No Apis cerana indica audio exists publicly at all."
+    },
+    "varroa_entrance_cnn": {
+      "version": "varroa-entrance-cnn-0.1.0",
+      "trained_at": "2026-09-08T14:45:25Z",
+      "dataset": "VarroaDataset (Schurischuster & Kampel 2020), CC BY 4.0",
+      "dataset_doi": "10.5281/zenodo.4085043",
+      "attribution": "Schurischuster, S. & Kampel, M. (2020). VarroaDataset. Zenodo. https://doi.org/10.5281/zenodo.4085043 (CC BY 4.0)",
+      "task": "binary infested/healthy for one bee imaged at a hive entrance",
+      "architecture": "4-block CNN, 112x192 RGB, ~0.3M params, CPU-trained",
+      "train_images": 8225,
+      "val_images": 1876,
+      "test_images": 3408,
+      "test_sessions": 2,
+      "test_accuracy": 0.8926,
+      "test_auc": 0.9213,
+      "infested_recall": 0.6847,
+      "infested_precision": 0.9034,
+      "healthy_recall": 0.972,
+      "macro_f1": 0.854,
+      "label_note": "gt.csv uses TWO positive ids, 1 (3,083) and 3 (864); the dataset README documents only 0 and 1. Merging them reproduces the published 3,947 infected / 9,562 healthy exactly. Training on `label == 1` alone would discard 22% of the positives.",
+      "split_note": "The dataset's own train/val/test split is used because it is session-disjoint, which we verified. bee_id appears to overlap train and test but is only unique within a session, so it is not leakage. The test set is 2 recording sessions.",
+      "caveat": "REAL images, Apis mellifera, controlled lighting at a hive entrance in Europe. This is an ENTRANCE-CAMERA model and does NOT replace the sticky-board counter in apps/api/aurabee_api/varroa.py -- different sensor, different question. It has never seen an Indian apiary or a phone photo."
+    }
+  },
+  "datasets": {
+    "version": 1,
+    "policy": [
+      "Every dataset MUST declare a license id, a resolvable source (DOI or URL) and an attribution string.",
+      "fetch_datasets.py REFUSES to download any entry missing those fields. Licensing is enforced in code, not promised in prose.",
+      "Datasets whose license forbids commercial use are marked commercial_use=false and MUST NOT be used to train anything shipped in a commercial deployment. They are kept for research comparison only.",
+      "Rejected sources are recorded below with the reason, so the same evaluation is not repeated."
+    ],
+    "datasets": {
+      "beehive_sounds_nolasco": {
+        "title": "To bee or not to bee: an annotated dataset for beehive sound recognition",
+        "creators": "Nolasco, In\u00eas; Benetos, Emmanouil",
+        "year": 2018,
+        "doi": "10.5281/zenodo.1321278",
+        "zenodo_record": 1321278,
+        "license": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "commercial_use": true,
+        "attribution": "Nolasco, I. & Benetos, E. (2018). To bee or not to bee: an annotated dataset for beehive sound recognition. Zenodo. https://doi.org/10.5281/zenodo.1321278 (CC BY 4.0)",
+        "approx_gb": 3.72,
+        "include_ext": [
+          ".wav",
+          ".lab"
+        ],
+        "species": "Apis mellifera",
+        "used_for": "Real-audio queen-presence classifier (ml/train_acoustic.py). Derived from the OSBH and NU-Hive projects.",
+        "known_confound": "Queen state is confounded with recording session and device: each hive-day is entirely queenright or entirely queenless. A random segment split leaks the session and produces a meaningless near-perfect score. Evaluation must group by recording."
+      },
+      "varroa_schurischuster": {
+        "title": "VarroaDataset",
+        "creators": "Schurischuster, Stefan; Kampel, Martin",
+        "year": 2020,
+        "doi": "10.5281/zenodo.4085043",
+        "zenodo_record": 4085044,
+        "license": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "commercial_use": true,
+        "attribution": "Schurischuster, S. & Kampel, M. (2020). VarroaDataset. Zenodo. https://doi.org/10.5281/zenodo.4085043 (CC BY 4.0)",
+        "approx_gb": 1.16,
+        "include_ext": [
+          ".zip",
+          ".csv"
+        ],
+        "species": "Apis mellifera",
+        "used_for": "Real varroa-infestation image classifier (ml/train_varroa_cnn.py). ~13,500 annotations, 3,947 infested / 9,562 healthy, 160x280 px, controlled lighting.",
+        "known_confound": "Recorded in a controlled and constant environment at a hive entrance. It is not a sticky-board dataset and does not resemble a phone photo taken in an Indian apiary; it validates mite appearance, not our field capture path."
+      },
+      "mspb_quebec": {
+        "title": "MSPB: a longitudinal multi-sensor dataset with phenotypic trait measurements from honey bees",
+        "creators": "Sperandio, G.; et al.",
+        "year": 2024,
+        "doi": "10.5281/zenodo.8371700",
+        "zenodo_record": 11398835,
+        "license": "CC-BY-NC-4.0",
+        "license_url": "https://creativecommons.org/licenses/by-nc/4.0/",
+        "commercial_use": false,
+        "attribution": "MSPB: a longitudinal multi-sensor dataset with phenotypic trait measurements from honey bees. Zenodo. https://doi.org/10.5281/zenodo.8371700 (CC BY-NC 4.0)",
+        "approx_gb": 0.43,
+        "include_ext": [
+          ".csv",
+          ".xlsx",
+          ".pdf"
+        ],
+        "species": "Apis mellifera",
+        "used_for": "Real colony-level validation: 53 hives in Quebec, one year, with measured Varroa destructor infestation levels, honey yield and winter mortality alongside temperature/humidity.",
+        "restriction": "NON-COMMERCIAL. Usable for research and for this hackathon; must not train a model shipped commercially without separate permission from the authors."
+      }
+    },
+    "rejected": {
+      "bob_germany_weights": {
+        "title": "Weight, Temperature and Humidity Sensor Data of Honey Bee Colonies in Germany, 2019-2022",
+        "zenodo_record": 10407693,
+        "approx_gb": 9.83,
+        "reason": "NO LICENSE DECLARED on the Zenodo record. This is the best real hive-weight source found -- 78 colonies, three years, scale plus five in-hive temperature sensors, exactly what the yield forecaster needs -- and it is unusable because open access is not the same as a licence to use. Revisit only if the authors add one or grant permission.",
+        "would_be_used_for": "Refitting the yield forecaster on real hive weight instead of simulated weight."
+      },
+      "beedataset_beealarmed": {
+        "source": "https://github.com/BeeAlarmed/BeeDataset",
+        "license": "GPL-3.0",
+        "reason": "GPL-3.0 applied to a dataset rather than to code. Its copyleft obligations on 'derived works' are legally unclear when the derived work is a trained model, and we will not put a model of uncertain provenance behind an on-chain gate. VarroaDataset (CC BY 4.0) covers the same task cleanly.",
+        "would_be_used_for": "Varroa / pollen / cooling multilabel classification."
+      },
+      "kaggle_sets": {
+        "source": "Kaggle: Smart Bee Colony Monitor, BeeTogether, BeeImage",
+        "reason": "Require an authenticated Kaggle API token this environment does not have, and per-dataset licences vary and must be checked individually rather than assumed from the platform. Deferred, not dismissed.",
+        "would_be_used_for": "Additional acoustic volume and a second opinion on queen detection."
+      }
+    }
+  },
+  "mspb_colony": {
+    "version": "mspb-colony-0.1.0",
+    "trained_at": "2026-09-08T14:50:04Z",
+    "dataset": "MSPB (Zenodo 8371700), CC BY-NC 4.0",
+    "dataset_doi": "10.5281/zenodo.8371700",
+    "licence_restriction": "NON-COMMERCIAL. Research use only. Nothing trained on MSPB may ship in a commercial deployment without the authors' permission.",
+    "species": "Apis mellifera",
+    "colonies_joined": 53,
+    "features": 44,
+    "feature_source": "per-colony mean and sd of 16 audio band energies, temperature, humidity, audio density and hive power",
+    "evaluation": "Leave-one-COLONY-out against a predict-the-mean baseline. The unit is the colony (n=53), not the sensor row (~1.9M), because rows from one colony are repeated measurements of the same thing.",
+    "results": {
+      "varroa": {
+        "n_colonies": 53,
+        "unit": "varroa per 100 bees",
+        "mae": 0.6704,
+        "baseline_mae": 0.6257,
+        "r2": -0.3172,
+        "beats_baseline": false,
+        "improvement_over_baseline": -0.0447,
+        "target_mean": 0.449,
+        "target_std": 0.784
+      },
+      "honey_kg": {
+        "n_colonies": 46,
+        "unit": "kg of honey",
+        "mae": 14.7769,
+        "baseline_mae": 13.2994,
+        "r2": -0.2958,
+        "beats_baseline": false,
+        "improvement_over_baseline": -1.4774,
+        "target_mean": 37.528,
+        "target_std": 16.549
+      }
+    },
+    "finding": "Season-MEAN acoustic, temperature and humidity features carry no usable signal about a colony's end-of-season varroa load or honey yield across these 53 colonies. Both targets score worse than predicting the training mean.",
+    "what_this_does_and_does_not_say": "It does NOT say hive sensors cannot predict yield. It says the crudest defensible summarisation -- one average per colony per sensor over a whole season -- throws away the trajectory, and trajectory is where our own simulator models find their signal (ml/features.py uses rolling windows precisely because faults are trajectories, not instants). A time-resolved model is the obvious next step.",
+    "why_we_did_not_keep_tuning": "With n=53 colonies and a leave-one-out score, iterating on feature engineering until the number turns positive is fitting the evaluation, not the problem. We ran the analysis we designed before seeing the answer, and we are reporting what it gave.",
+    "bug_found_and_fixed": "The first run of this script joined on `beehub_name` and reported honey R^2 = +0.136, 'beats baseline'. beehub_name is the APIARY: two values for 53 colonies, so every colony received one of two feature vectors and the score was an apiary-mean effect. Joining correctly on tag_number - 200000 moved honey R^2 to -0.309. A guard now refuses to report any score when the number of distinct feature vectors is under half the number of colonies.",
+    "caveat": "Apis mellifera in Quebec, n=53 colonies. A negative result at this sample size is weak evidence, and it is reported rather than tuned away."
+  },
   "sensor_ablation": {
     "generated_at": "2026-09-05T20:02:26Z",
     "test_set": "ml/datasets/holdout_v1.csv (separate run, disjoint hives)",
@@ -368,18 +580,26 @@
     "finding": "Removing the microphone costs 0.265 macro F1 and 0.624 of pre_swarm recall (0.990 -> 0.365) -- swarm prediction is almost entirely acoustic. The best single-sensor configuration is 'microphone only' at 0.693; the worst is 'scale only' at 0.433. Permutation importance ranked mass features on top and was misleading, because the 33 acoustic features are correlated and permuting one at a time barely moves the score. Ablation by sensor GROUP is the honest measurement."
   },
   "ledger_verification": {
-    "ran": true,
-    "exit_code": 0,
-    "batches_checked": 16,
-    "invariants_held": 25,
-    "invariants_broken": 0,
-    "all_hold": true,
-    "note": "Verified against chain state alone. The database supplied only the list of batch codes; every value was read from the deployed contracts."
+    "ran": false,
+    "reason": "could not reach the chain or database; the stack was not running when metrics were exported",
+    "not_a_verification_failure": true,
+    "exit_code": 1,
+    "stderr_tail": [
+      "no chain at http://localhost:8545"
+    ],
+    "last_successful_run": {
+      "batches_checked": 16,
+      "invariants_held": 25,
+      "invariants_broken": 0,
+      "all_hold": true
+    },
+    "reproduce": "start the stack, then: python scripts/verify_ledger.py"
   },
   "charts": [
     "colony_health_recall.png",
     "anomaly_auc.png",
-    "sensor_ablation.png"
+    "sensor_ablation.png",
+    "acoustic_queen.png"
   ],
-  "global_caveat": "Every model number here was measured on SIMULATED hives. It shows the models learned the physics the simulator encodes; it is not evidence they work on real bees. Most public bee acoustics are Apis mellifera, and Apis cerana indica -- common in Indian beekeeping -- is a further gap with no public dataset."
+  "global_caveat": "Read the two halves of this file differently. Everything above the 'REAL, licensed data' heading was measured on SIMULATED hives: it shows the models learned the physics the simulator encodes, and is not evidence they work on real bees. Everything below it was measured on real colonies, and two of those three results are negative -- reported because a folder that only records what worked is advertising.\n\nThe gap that remains after both halves is the same one: every real dataset available is Apis mellifera in Europe or Canada. Apis cerana indica, common in Indian beekeeping, has NO public dataset at all, and the yield ceiling that gates a beekeeper's income has still never been fitted against a real Indian harvest."
 }

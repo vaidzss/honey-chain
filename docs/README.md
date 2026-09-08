@@ -22,6 +22,7 @@ Built for **SIH 2026 problem statement SIH26021** (KVIC, Ministry of MSME).
 | 12 | [**Pitch deck content**](12-pitch-deck.md) | The six-slide SIH submission deck written to the official template, plus reserve material for the finale |
 | 13 | [**Our perspective**](13-perspective.md) | The positions behind the design, what we refuse to claim, and five mistakes that changed the build |
 | 14 | [**Roadmap**](14-roadmap.md) | Stages, exit gates, and what is deliberately not built |
+| 15 | [**Real data**](15-real-data.md) | Licensed datasets fetched, three models trained on them, and the two that failed |
 
 ## Status
 
@@ -48,6 +49,10 @@ Built for **SIH 2026 problem statement SIH26021** (KVIC, Ministry of MSME).
 | Beekeeper app (hives, alerts, harvest) | working, Hindi + English |
 | Anomaly detector (one-class) | **trained** — robbing AUC 0.997 |
 | Varroa counter (classical CV) | working — 12.5% error on synthetic boards |
+| **Varroa CNN on real images** | **trained** — 0.893 acc / 0.921 AUC, CC-BY data |
+| **Queen detection on real audio** | **measured and NOT shipped** — fails cross-hive |
+| **MSPB colony check (real hives)** | **measured** — no signal from season averages |
+| Licensed dataset registry + fetcher | working — licence enforced in code |
 | Metrics page (`/metrics`) | working |
 | Ledger proofs + independent verifier | working — 25 invariants over 16 batches, chain-only |
 | FPO / processor / KVIC consoles | working |

@@ -45,6 +45,7 @@ and the intelligence layer. Sequence and exit gates are in
 | Anomaly detector (one-class) | **trained** — robbing AUC 0.997, 1.0% false alarms |
 | Beekeeper app (Hindi + English) | working |
 | Varroa counter (classical CV) | working — refuses unusable photos |
+| **Models on real licensed data** | 1 works, 2 negative — [docs/15-real-data.md](docs/15-real-data.md) |
 | Metrics page, ledger proofs, 3 consoles | working — 25 invariants verified, chain-only |
 | Offline harvest queue | working |
 | ESP32 firmware | not started — [stage 3](docs/14-roadmap.md) |
@@ -149,6 +150,7 @@ reading first:
 | [**Our perspective**](docs/13-perspective.md) | The positions behind the design, what we refuse to claim, and five mistakes that changed the build |
 | [**How we enter the chain**](docs/10-adoption.md) | Market-entry diagrams, the four adoption wedges, and why anyone opts in |
 | [**Roadmap**](docs/14-roadmap.md) | Stages, exit gates, and what is deliberately not built |
+| [**Real data**](docs/15-real-data.md) | Licensed datasets, what we trained on them, and what failed |
 
 A file-by-file reference for the whole repo is in
 [docs/02-file-reference.md](docs/02-file-reference.md). Measured results are

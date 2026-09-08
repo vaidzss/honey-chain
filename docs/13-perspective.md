@@ -170,6 +170,31 @@ a finding — and dashboards need invariants as much as ledgers do.
 
 ---
 
+### 3.6 A join key that looked right and produced a publishable lie
+
+Testing our yield claim against real colonies (MSPB, 53 hives), the first run
+reported honey **R² = +0.136, "beats baseline"**. A modest, believable,
+entirely publishable number.
+
+It was an artefact. We joined the sensor stream to the outcomes on
+`beehub_name`, which looks like a hive identifier and is actually the *apiary* —
+**two values for fifty-three colonies**. Every colony received one of two
+feature vectors, so the model was learning an apiary mean and calling it
+acoustics. The correct key is `tag_number − 200000`. With the join fixed, R²
+moved to **−0.296**: no signal at all.
+
+What caught it was not a test. It was two lines of log output that could not
+both be true — *"2 colonies in the sensor stream"* directly above *"53 colonies
+join on both sides"*.
+
+*Changed:* the script now asserts that distinct feature vectors are at least
+half the number of colonies and refuses to report a score otherwise. The wider
+lesson is the one that keeps recurring here: **the dangerous bug is not the one
+that crashes, it is the one that returns a plausible number.** A negative result
+would have been believed. So would the wrong positive one.
+
+---
+
 ## 4. How we decide what to build next
 
 In this order:

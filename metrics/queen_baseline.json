@@ -1,0 +1,48 @@
+{
+  "version": "queen-baseline-0.1.0",
+  "trained_at": "2026-09-09T16:14:40Z",
+  "task": "per-hive one-class change detection: is this colony still sounding like itself?",
+  "dataset": "To bee or not to bee (Nolasco & Benetos 2018), CC BY 4.0",
+  "dataset_doi": "10.5281/zenodo.1321278",
+  "method": "IsolationForest fitted ONLY on queenright windows from the same hive; queenless windows scored as novelty",
+  "hives_evaluated": 2,
+  "mean_auc": 0.9597,
+  "mean_detection_at_5pct_false_alarm": 0.756,
+  "per_hive": [
+    {
+      "hive": "Hive1",
+      "baseline_windows": 1272,
+      "held_out_normal": 544,
+      "queenless_windows": 713,
+      "auc": 0.9749,
+      "detection_rate_at_5pct_false_alarm": 0.7924,
+      "false_alarm_rate": 0.0515
+    },
+    {
+      "hive": "Hive3",
+      "baseline_windows": 160,
+      "held_out_normal": 68,
+      "queenless_windows": 2397,
+      "auc": 0.9445,
+      "detection_rate_at_5pct_false_alarm": 0.7196,
+      "false_alarm_rate": 0.0588
+    }
+  ],
+  "negative_control_same_state_different_day": [
+    {
+      "hive": "Hive3",
+      "state": "queenless",
+      "day_a": "12_07_2017",
+      "day_b": "15_07_2017",
+      "auc": 0.9991
+    }
+  ],
+  "control_mean_auc": 0.9991,
+  "control_verdict": "FAILS the control: same-state different-day separates at AUC 0.999, so the detector is largely reading the day rather than the colony. The headline number must not be quoted as queen detection.",
+  "deployable_framing": false,
+  "why_this_framing": "A sentinel node is fixed to one hive and hears it continuously through the same microphone. It never needs to classify a hive it has not heard, which is the task that fails cross-hive here and in the published Bee Together study (99.2% on a standard split, 34-84% when a hive is held out).",
+  "confound_not_escaped": "Within a hive the queenright and queenless recordings are still different DAYS, so part of any separation is day effect rather than queen effect. Distinguishing them needs recordings where a colony is followed through a queen loss on adjacent days, which no public dataset provides. This is an upper bound on performance, not a field estimate.",
+  "finding": "BOTH framings fail on this corpus. Cross-hive classification scores 0.278 against a 0.510 baseline. Per-hive change detection looks strong at 0.960 AUC until the control is run -- and the same colony in the SAME state on a different day separates at 0.999, higher than the queen comparison itself. The detector is reading the recording day, not the colony.",
+  "what_would_actually_settle_it": "Recordings of one hive on ADJACENT days spanning a queen loss, so day effect and queen effect are not the same variable. This corpus has one queenright day and one queenless day per hive, weeks apart. UrBAN (Nature Sci Data 2025, CC BY 4.0) records 10 hives continuously every 30 minutes for two years with queenright/queenless labels, which is exactly the structure required.",
+  "caveat": "Two hives, Apis mellifera, European. This is a negative result about the available public data, not a claim that hive acoustics cannot detect queen loss."
+}

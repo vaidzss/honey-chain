@@ -231,6 +231,7 @@ def main() -> int:
     # a simulator number quietly borrow credibility from a real one.
     acoustic = read_json(OUT / "acoustic_queen.json")
     varroa_cnn = read_json(OUT / "varroa_entrance_cnn.json")
+    queen_base = read_json(OUT / "queen_baseline.json")
 
     # copy the per-model metadata in under stable names
     for meta, fname in ((health, "colony_health.json"),
@@ -307,6 +308,7 @@ def main() -> int:
         },
         "models_trained_on_real_data": {
             "acoustic_queen": acoustic,
+            "queen_per_hive_baseline": queen_base,
             "varroa_entrance_cnn": varroa_cnn,
         },
         "datasets": read_json(ROOT / "ml/datasets/registry.json"),
@@ -488,7 +490,8 @@ def build_readme(ix: dict) -> str:
     real = ix.get("models_trained_on_real_data") or {}
     aq, vc, mspb = (real.get("acoustic_queen"), real.get("varroa_entrance_cnn"),
                     ix.get("mspb_colony"))
-    if any((aq, vc, mspb)):
+    queen_base = real.get("queen_per_hive_baseline")
+    if any((aq, vc, mspb, queen_base)):
         L += ["---", "", "## Models trained on REAL, licensed data", "",
               "Kept separate from everything above, which is simulator-trained. "
               "Dataset licences and the sources we rejected are in "
@@ -517,19 +520,39 @@ def build_readme(ix: dict) -> str:
               aq["why_not_shipped"], "",
               "![queen](acoustic_queen.png)", ""]
 
+    if queen_base:
+        cb = queen_base
+        L += ["### Queen detection reframed as per-hive change detection", "",
+              f"- Per-hive AUC **{cb['mean_auc']:.3f}**, detecting "
+              f"{cb['mean_detection_at_5pct_false_alarm']:.1%} of queenless "
+              f"windows at ~5% false alarm.",
+              f"- **Negative control:** {cb['control_verdict']}",
+              f"- Shipped: **{'yes' if cb['deployable_framing'] else 'NO'}**", "",
+              cb["finding"], "", cb["what_would_actually_settle_it"], ""]
+
     if mspb:
         L += ["### Colony-level check on real hives (MSPB)", "",
-              f"- {mspb['colonies_joined']} colonies, "
-              f"{mspb['features']} features. **{mspb['licence_restriction']}**", ""]
-        L += ["| Target | n | model MAE | baseline MAE | R² | verdict |",
-              "|---|---|---|---|---|---|"]
+              f"- {mspb.get('colonies', '?')} colonies, "
+              f"{mspb.get('features', '?')} features. "
+              f"**{mspb.get('licence_restriction', '')}**", ""]
+        L += ["| Target | n | result | baseline | verdict |",
+              "|---|---|---|---|---|"]
         for k, r in (mspb.get("results") or {}).items():
-            L += [f"| {k} ({r['unit']}) | {r['n_colonies']} | {r['mae']} | "
-                  f"{r['baseline_mae']} | {r['r2']} | "
-                  f"{'beats baseline' if r['beats_baseline'] else '**no better than the mean**'} |"]
-        L += ["", mspb["what_this_does_and_does_not_say"], "",
-              mspb["why_we_did_not_keep_tuning"], "",
-              f"*Bug found and fixed:* {mspb['bug_found_and_fixed']}", ""]
+            if "auc" in r:
+                L += [f"| {k} ({r.get('unit', '')}) | {r['n']} | "
+                      f"AUC {r['auc']}, acc {r['accuracy']} | "
+                      f"majority {r['majority_baseline']} | "
+                      f"{'signal' if r['beats_chance'] else '**no signal**'} |"]
+            else:
+                L += [f"| {k} ({r.get('unit', '')}) | {r['n']} | "
+                      f"MAE {r['mae']}, R² {r['r2']} | MAE {r['baseline_mae']} | "
+                      f"{'beats baseline' if r['beats_baseline'] else '**no better than the mean**'} |"]
+        L += [""]
+        for note in (mspb.get("notes") or {}).values():
+            L += [note, ""]
+        if mspb.get("changes_from_0_1_0"):
+            L += [f"*What changed since the first attempt:* "
+                  f"{mspb['changes_from_0_1_0']}", ""]
 
     L += ["---", "", "## Ledger verification", ""]
     if lg.get("ran"):

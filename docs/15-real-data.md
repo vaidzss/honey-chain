@@ -150,7 +150,10 @@ states, which is a stated goal of the pilot in [14-roadmap.md](14-roadmap.md).
 
 ---
 
-## 4. Colony-level check on real hives — **no signal**
+## 4. Colony-level check on real hives — first attempt, **no signal**
+
+> Superseded by [4b](#4b-second-attempt-at-both-failures), which rebuilds this
+> properly. Kept because the first attempt's flaws are the interesting part.
 
 `ml/train_mspb.py` → `metrics/mspb_colony.json`
 
@@ -196,12 +199,110 @@ feature vectors fall below half the colony count.
 
 ---
 
+## 4b. Second attempt at both failures
+
+Reporting a negative and stopping is the easy way out. Both experiments were
+rebuilt.
+
+### Queen detection, reframed to match deployment — and the control that killed it
+
+Cross-hive classification is the question the literature asks, and the
+peer-reviewed *Bee Together* study (Sensors 2024) reports the same collapse we
+found across **10** hives: **99.2%** on a standard split, **34-84%** when a hive
+is held out, with models "unable to extrapolate their predictions of precise
+Queen or NoQueen labels".
+
+But AuraBee never has to answer that question. **A sentinel node is bolted to
+one hive and stays there.** So the deployable question is narrower: *given this
+hive's own baseline while it is known queenright, can we detect when it stops
+sounding like itself?* That is one-class change detection, the same shape as
+`ml/train_anomaly.py` for telemetry.
+
+It looked excellent:
+
+| Hive | AUC | detection at ~5% false alarm |
+|---|---|---|
+| Hive1 | 0.975 | 79.2% |
+| Hive3 | 0.944 | 72.0% |
+
+**Then the negative control failed.** Within a hive, queenright and queenless
+recordings come from different *days*, so the detector might be reading the
+calendar rather than the colony. Hive3 has queenless recordings on two separate
+days, which allows the control: fit the baseline on one day, score a different
+day **in the same state**.
+
+> Same hive, same state, different day: **AUC 0.999** — *higher* than the
+> queen-versus-no-queen separation of 0.960.
+
+So the model is a day detector. A colony differs from itself on another day more
+than a queenright colony differs from a queenless one. `train_queen_baseline.py`
+therefore refuses the result and prints `NOT a queen detector`.
+
+**Both framings fail, for the same underlying reason:** every comparison this
+corpus permits is confounded with the recording day.
+
+### Colony-level MSPB, rebuilt properly — still no signal
+
+Version 0.1.0 had three legitimate flaws, all fixed in 0.2.0:
+
+1. **It threw away the trajectory** — one season average per colony. Now
+   monthly aggregates summarised as mean, spread, range, last value and
+   seasonal slope (`ml/mspb_features.py`).
+2. **It leaked** — the season average spanned months *after* the varroa count of
+   13 Aug 2020. Now only months strictly before the measurement feed it.
+3. **It modelled a zero-inflated count as regression** — 36 of 53 colonies
+   measured exactly zero mites. Now binary "any mites detected", scored by AUC.
+
+| Target | n | result | baseline | verdict |
+|---|---|---|---|---|
+| varroa detected (binary) | 53 | AUC **0.350**, acc 0.491 | majority 0.679 | no signal |
+| honey (kg) | 46 | MAE 15.33, R² **−0.320** | MAE 13.30 | no better than the mean |
+
+The negative is now trustworthy precisely *because* the method objections were
+answered. Season-averaging was not what was hiding the signal.
+
+---
+
+## 4c. Hunting for more hives, and what the search actually found
+
+The binding constraint on queen detection is **hives, not method**. So:
+
+**OSBH full archive (Zenodo 321345, CC BY 4.0) — audited, adds nothing.**
+Fetched all 482 MB. The state split is Active 303, **Missing Queen 1**,
+Pre-Swarm 1, Queen Hatching 1, Sick-Varroa 1, Swarm 1 — and 300 of the 303
+Active files come from a single location. **There is exactly one queenless
+recording in the entire archive.** The curated "To bee or not to bee" corpus had
+already extracted everything usable. This is why the whole field trains on the
+same two hives.
+
+**NU-Hive full (23 GB) — rejected.** Longer recordings of the *same* two hives.
+More minutes does not fix a two-hive problem.
+
+**Two datasets are blocked on access, not licence, and both would settle this:**
+
+| Source | What it gives | Blocker |
+|---|---|---|
+| **UrBAN** (FRDR, CC BY 4.0) | **10 hives**, Montreal 2021-22, a 15-min recording every 30 min *continuously*, with queenright/queenless labels **and** varroa rates by alcohol wash | Globus-only transfer; the repository's zip download is disabled while files are backed up. Needs a Globus account. |
+| **BeeTogether / SBCM** (Kaggle) | 10 distinct hives merged specifically to study hive extrapolation | Needs a Kaggle API token in `~/.kaggle/` |
+
+**UrBAN is the one that matters.** Its continuity is the decisive property: a
+15-minute recording every 30 minutes means the same colony on *adjacent days*
+spanning a queen loss — the only structure that can separate a queen effect from
+a day effect, which is exactly the control that just failed. Only a subset is
+needed, not the full 1.5 TB.
+
+---
+
 ## 5. What this changes about the project's claims
 
 - The varroa story improves and gains a **second, real modality**: an entrance
   camera detects mites on bees at 0.89 accuracy on unseen sessions.
-- The queen-detection story does **not** improve. The public data cannot support
-  it, and we now have the measurement that says so rather than an assumption.
+- The queen-detection story does **not** improve, and we now know precisely
+  why. It is not our method: cross-hive fails, the deployment-shaped per-hive
+  reframing fails its own day-effect control, the full OSBH archive contains one
+  queenless recording, and a peer-reviewed study reports the same collapse over
+  10 hives. The constraint is the data, and the dataset that would settle it
+  (UrBAN) is behind a Globus transfer rather than a licence.
 - The yield story is **unchanged and still the weakest link**. The P90 that
   becomes an on-chain mint ceiling has never been fitted against a real harvest,
   the one dataset that could have helped is unlicensed, and season-average

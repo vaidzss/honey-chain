@@ -9,7 +9,7 @@
   "datasets": {
     "beehive_sounds_nolasco": {
       "title": "To bee or not to bee: an annotated dataset for beehive sound recognition",
-      "creators": "Nolasco, Inês; Benetos, Emmanouil",
+      "creators": "Nolasco, In\u00eas; Benetos, Emmanouil",
       "year": 2018,
       "doi": "10.5281/zenodo.1321278",
       "zenodo_record": 1321278,
@@ -18,7 +18,10 @@
       "commercial_use": true,
       "attribution": "Nolasco, I. & Benetos, E. (2018). To bee or not to bee: an annotated dataset for beehive sound recognition. Zenodo. https://doi.org/10.5281/zenodo.1321278 (CC BY 4.0)",
       "approx_gb": 3.72,
-      "include_ext": [".wav", ".lab"],
+      "include_ext": [
+        ".wav",
+        ".lab"
+      ],
       "species": "Apis mellifera",
       "used_for": "Real-audio queen-presence classifier (ml/train_acoustic.py). Derived from the OSBH and NU-Hive projects.",
       "known_confound": "Queen state is confounded with recording session and device: each hive-day is entirely queenright or entirely queenless. A random segment split leaks the session and produces a meaningless near-perfect score. Evaluation must group by recording."
@@ -34,7 +37,10 @@
       "commercial_use": true,
       "attribution": "Schurischuster, S. & Kampel, M. (2020). VarroaDataset. Zenodo. https://doi.org/10.5281/zenodo.4085043 (CC BY 4.0)",
       "approx_gb": 1.16,
-      "include_ext": [".zip", ".csv"],
+      "include_ext": [
+        ".zip",
+        ".csv"
+      ],
       "species": "Apis mellifera",
       "used_for": "Real varroa-infestation image classifier (ml/train_varroa_cnn.py). ~13,500 annotations, 3,947 infested / 9,562 healthy, 160x280 px, controlled lighting.",
       "known_confound": "Recorded in a controlled and constant environment at a hive entrance. It is not a sticky-board dataset and does not resemble a phone photo taken in an Indian apiary; it validates mite appearance, not our field capture path."
@@ -50,10 +56,33 @@
       "commercial_use": false,
       "attribution": "MSPB: a longitudinal multi-sensor dataset with phenotypic trait measurements from honey bees. Zenodo. https://doi.org/10.5281/zenodo.8371700 (CC BY-NC 4.0)",
       "approx_gb": 0.43,
-      "include_ext": [".csv", ".xlsx", ".pdf"],
+      "include_ext": [
+        ".csv",
+        ".xlsx",
+        ".pdf"
+      ],
       "species": "Apis mellifera",
       "used_for": "Real colony-level validation: 53 hives in Quebec, one year, with measured Varroa destructor infestation levels, honey yield and winter mortality alongside temperature/humidity.",
       "restriction": "NON-COMMERCIAL. Usable for research and for this hackathon; must not train a model shipped commercially without separate permission from the authors."
+    },
+    "osbh_full": {
+      "title": "Open Source Beehives Project - Audio Database as of 2017-02-21",
+      "creators": "Open Source Beehives Project",
+      "year": 2017,
+      "doi": "10.5281/zenodo.321345",
+      "zenodo_record": 321345,
+      "license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "commercial_use": true,
+      "attribution": "Open Source Beehives Project (2017). Audio Database. Zenodo. https://doi.org/10.5281/zenodo.321345 (CC BY 4.0)",
+      "approx_gb": 0.5,
+      "include_ext": [
+        ".zip"
+      ],
+      "species": "Apis mellifera",
+      "used_for": "Audited as a candidate source of extra hives for cross-hive queen detection. It is not one -- see audit_finding. This entry exists so the check is not repeated.",
+      "known_confound": "Citizen science: recording device, placement and environment vary per contributor, which is the same channel effect that defeats cross-hive transfer. More hives is the point -- it lets the effect be measured across many contributors instead of two.",
+      "audit_finding": "FETCHED AND AUDITED: 308 audio files, but the state split is Active 303, Missing Queen 1, Pre-Swarm 1, Queen Hatching 1, Sick-Varroa 1, Swarm 1 -- and 300 of the 303 Active files are from a single location (Canberra). There is exactly ONE queenless recording in the whole archive. It therefore adds no hive diversity for queen detection; the 'To bee or not to bee' curation had already extracted everything usable. Kept for provenance and for the queenright-only material, not used for supervised queen training."
     }
   },
   "rejected": {
@@ -74,6 +103,48 @@
       "source": "Kaggle: Smart Bee Colony Monitor, BeeTogether, BeeImage",
       "reason": "Require an authenticated Kaggle API token this environment does not have, and per-dataset licences vary and must be checked individually rather than assumed from the platform. Deferred, not dismissed.",
       "would_be_used_for": "Additional acoustic volume and a second opinion on queen detection."
+    },
+    "nuhive_full": {
+      "title": "Audio-Based identification of Beehive states: The dataset (full NU-Hive)",
+      "zenodo_record": 2667806,
+      "license": "CC-BY-4.0",
+      "approx_gb": 23.1,
+      "reason": "23 GB of RAR archives covering the SAME two hives (Hive1, Hive3) already present via 'To bee or not to bee'. Longer recordings of two hives do not fix a two-hive problem, and it does not fit the disk budget. Revisit only if hive count stops being the binding constraint.",
+      "would_be_used_for": "More minutes per hive, not more hives."
+    },
+    "bee_drone_audio": {
+      "title": "Dataset for honey bee audio detection",
+      "zenodo_record": 10359686,
+      "license": "CC-BY-4.0",
+      "reason": "Labels are bee vs drone, not queen state. Wrong task.",
+      "would_be_used_for": "n/a"
+    },
+    "beehive_audio_recordings_unlabelled": {
+      "title": "beehive Audio recordings",
+      "zenodo_record": 7052981,
+      "license": "CC-BY-4.0",
+      "reason": "10,000 clips carry a hive id and timestamp but NO colony-state label, so they cannot supervise queen detection. Held in reserve for per-hive baseline/anomaly work, which needs no labels.",
+      "would_be_used_for": "Unsupervised per-hive baseline modelling."
+    }
+  },
+  "blocked": {
+    "urban_frdr": {
+      "title": "UrBAN: Urban Beehive Acoustics and PheNotyping Dataset",
+      "doi": "10.20383/103.0972",
+      "host": "Federated Research Data Repository (FRDR), Canada",
+      "license": "CC-BY-4.0",
+      "approx_gb": 1500,
+      "why_it_matters": "10 hives, 2021-2022, Montreal, recording a 15-minute segment every 30 minutes CONTINUOUSLY, with queenright/queenless labels AND varroa infestation rates by alcohol wash. Continuity is the decisive property: it gives the same colony on ADJACENT days spanning a queen loss, which is the only structure that can separate a queen effect from a day effect. No other public dataset has it.",
+      "blocker": "Globus-only transfer; the repository's zip download is disabled while the files are being backed up. Needs a Globus account and Globus Connect Personal on the machine -- a user action, not a licence problem.",
+      "globus_url": "https://globus.frdr.ca/file-manager?locale=en-us&origin_id=f163c1b3-9c88-42f6-a7bb-5839ed6c4063&origin_path=/1/published/publication_967/submitted_data",
+      "note": "Only a subset is needed -- a few weeks per hive around a labelled queen event, not the full 1.5 TB."
+    },
+    "kaggle_beetogether": {
+      "title": "BeeTogether (merged bee audio) and Smart Bee Colony Monitor",
+      "host": "Kaggle",
+      "license": "per-dataset, must be checked individually",
+      "why_it_matters": "BeeTogether merges NUHIVE, OSBH, TBON and SBCM into 10 distinct hives and was built specifically to study hive extrapolation. It would let the cross-hive and the day-effect control run over 10 hives instead of 2.",
+      "blocker": "Needs a Kaggle API token (kaggle.json) placed in ~/.kaggle/. Two minutes of user action."
     }
   }
 }

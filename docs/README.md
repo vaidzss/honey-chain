@@ -51,7 +51,8 @@ Built for **SIH 2026 problem statement SIH26021** (KVIC, Ministry of MSME).
 | Varroa counter (classical CV) | working — 12.5% error on synthetic boards |
 | **Varroa CNN on real images** | **trained** — 0.893 acc / 0.921 AUC, CC-BY data |
 | **Queen detection on real audio** | **measured and NOT shipped** — fails cross-hive |
-| **MSPB colony check (real hives)** | **measured** — no signal from season averages |
+| **MSPB colony check (real hives)** | **measured twice** — no signal even time-resolved |
+| **Queen detection, per-hive reframing** | **measured** — fails its day-effect control |
 | Licensed dataset registry + fetcher | working — licence enforced in code |
 | Metrics page (`/metrics`) | working |
 | Ledger proofs + independent verifier | working — 25 invariants over 16 batches, chain-only |

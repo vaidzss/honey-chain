@@ -1,6 +1,6 @@
 # Model results
 
-Generated 2026-09-08T14:53:11Z by `scripts/export_metrics.py`.
+Generated 2026-09-09T16:25:41Z by `scripts/export_metrics.py`.
 Every number is read from the artefact that produced it — nothing here
 is retyped, so this cannot drift from the models actually loaded.
 
@@ -134,20 +134,28 @@ We do not ship a model that loses to a coin flip. The deployed queenless detecto
 
 ![queen](acoustic_queen.png)
 
+### Queen detection reframed as per-hive change detection
+
+- Per-hive AUC **0.960**, detecting 75.6% of queenless windows at ~5% false alarm.
+- **Negative control:** FAILS the control: same-state different-day separates at AUC 0.999, so the detector is largely reading the day rather than the colony. The headline number must not be quoted as queen detection.
+- Shipped: **NO**
+
+BOTH framings fail on this corpus. Cross-hive classification scores 0.278 against a 0.510 baseline. Per-hive change detection looks strong at 0.960 AUC until the control is run -- and the same colony in the SAME state on a different day separates at 0.999, higher than the queen comparison itself. The detector is reading the recording day, not the colony.
+
+Recordings of one hive on ADJACENT days spanning a queen loss, so day effect and queen effect are not the same variable. This corpus has one queenright day and one queenless day per hive, weeks apart. UrBAN (Nature Sci Data 2025, CC BY 4.0) records 10 hives continuously every 30 minutes for two years with queenright/queenless labels, which is exactly the structure required.
+
 ### Colony-level check on real hives (MSPB)
 
-- 53 colonies, 44 features. **NON-COMMERCIAL. Research use only. Nothing trained on MSPB may ship in a commercial deployment without the authors' permission.**
+- 53 colonies, 36 features. **NON-COMMERCIAL. Research use only. Nothing trained on MSPB may ship in a commercial deployment without the authors' permission.**
 
-| Target | n | model MAE | baseline MAE | R² | verdict |
-|---|---|---|---|---|---|
-| varroa (varroa per 100 bees) | 53 | 0.6704 | 0.6257 | -0.3172 | **no better than the mean** |
-| honey_kg (kg of honey) | 46 | 14.7769 | 13.2994 | -0.2958 | **no better than the mean** |
+| Target | n | result | baseline | verdict |
+|---|---|---|---|---|
+| varroa_detected_binary (any mites found (>0 per 100 bees)) | 53 | AUC 0.3497, acc 0.4906 | majority 0.6792 | **no signal** |
+| honey_kg (kg of honey) | 46 | MAE 15.3336, R² -0.32 | MAE 13.2994 | **no better than the mean** |
 
-It does NOT say hive sensors cannot predict yield. It says the crudest defensible summarisation -- one average per colony per sensor over a whole season -- throws away the trajectory, and trajectory is where our own simulator models find their signal (ml/features.py uses rolling windows precisely because faults are trajectories, not instants). A time-resolved model is the obvious next step.
+Modelled as CLASSIFICATION because the count is zero-inflated: 36 of 53 colonies measured exactly zero, median 0.0, max 2.74. Regression on that target mostly rewards predicting the mean. Features use only months before the measurement date.
 
-With n=53 colonies and a leave-one-out score, iterating on feature engineering until the number turns positive is fitting the evaluation, not the problem. We ran the analysis we designed before seeing the answer, and we are reporting what it gave.
-
-*Bug found and fixed:* The first run of this script joined on `beehub_name` and reported honey R^2 = +0.136, 'beats baseline'. beehub_name is the APIARY: two values for 53 colonies, so every colony received one of two feature vectors and the score was an apiary-mean effect. Joining correctly on tag_number - 200000 moved honey R^2 to -0.309. A guard now refuses to report any score when the number of distinct feature vectors is under half the number of colonies.
+*What changed since the first attempt:* v0.1.0 used one season average per colony and found nothing. It also leaked (the average spanned months after the varroa count) and modelled a zero-inflated count as regression. v0.2.0 uses time-resolved monthly features, restricts varroa features to months before the measurement, and models varroa as binary detection scored by AUC.
 
 ---
 

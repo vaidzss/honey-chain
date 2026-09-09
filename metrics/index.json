@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-08T14:53:11Z",
+  "generated_at": "2026-09-09T16:25:41Z",
   "models": {
     "colony_health": {
       "version": "health-hgb-0.1.0",
@@ -335,6 +335,54 @@
       "why_not_shipped": "We do not ship a model that loses to a coin flip. The deployed queenless detector remains the telemetry classifier in ml/train_health.py, which is simulator-trained and labelled as such. Real-audio queen detection needs recordings from multiple hives in BOTH states -- this corpus has only two such hives, and collecting that data is a stated goal of the pilot.",
       "caveat": "REAL audio, Apis mellifera, European hives. The naive random-split accuracy is reported only to show the size of the leakage a careless split would have produced -- it is not a result. Only two of the four hives appear in both queen states, so the cross-hive test has n=2 and is evidence about this dataset rather than a general claim about bee acoustics. No Apis cerana indica audio exists publicly at all."
     },
+    "queen_per_hive_baseline": {
+      "version": "queen-baseline-0.1.0",
+      "trained_at": "2026-09-09T16:14:40Z",
+      "task": "per-hive one-class change detection: is this colony still sounding like itself?",
+      "dataset": "To bee or not to bee (Nolasco & Benetos 2018), CC BY 4.0",
+      "dataset_doi": "10.5281/zenodo.1321278",
+      "method": "IsolationForest fitted ONLY on queenright windows from the same hive; queenless windows scored as novelty",
+      "hives_evaluated": 2,
+      "mean_auc": 0.9597,
+      "mean_detection_at_5pct_false_alarm": 0.756,
+      "per_hive": [
+        {
+          "hive": "Hive1",
+          "baseline_windows": 1272,
+          "held_out_normal": 544,
+          "queenless_windows": 713,
+          "auc": 0.9749,
+          "detection_rate_at_5pct_false_alarm": 0.7924,
+          "false_alarm_rate": 0.0515
+        },
+        {
+          "hive": "Hive3",
+          "baseline_windows": 160,
+          "held_out_normal": 68,
+          "queenless_windows": 2397,
+          "auc": 0.9445,
+          "detection_rate_at_5pct_false_alarm": 0.7196,
+          "false_alarm_rate": 0.0588
+        }
+      ],
+      "negative_control_same_state_different_day": [
+        {
+          "hive": "Hive3",
+          "state": "queenless",
+          "day_a": "12_07_2017",
+          "day_b": "15_07_2017",
+          "auc": 0.9991
+        }
+      ],
+      "control_mean_auc": 0.9991,
+      "control_verdict": "FAILS the control: same-state different-day separates at AUC 0.999, so the detector is largely reading the day rather than the colony. The headline number must not be quoted as queen detection.",
+      "deployable_framing": false,
+      "why_this_framing": "A sentinel node is fixed to one hive and hears it continuously through the same microphone. It never needs to classify a hive it has not heard, which is the task that fails cross-hive here and in the published Bee Together study (99.2% on a standard split, 34-84% when a hive is held out).",
+      "confound_not_escaped": "Within a hive the queenright and queenless recordings are still different DAYS, so part of any separation is day effect rather than queen effect. Distinguishing them needs recordings where a colony is followed through a queen loss on adjacent days, which no public dataset provides. This is an upper bound on performance, not a field estimate.",
+      "finding": "BOTH framings fail on this corpus. Cross-hive classification scores 0.278 against a 0.510 baseline. Per-hive change detection looks strong at 0.960 AUC until the control is run -- and the same colony in the SAME state on a different day separates at 0.999, higher than the queen comparison itself. The detector is reading the recording day, not the colony.",
+      "what_would_actually_settle_it": "Recordings of one hive on ADJACENT days spanning a queen loss, so day effect and queen effect are not the same variable. This corpus has one queenright day and one queenless day per hive, weeks apart. UrBAN (Nature Sci Data 2025, CC BY 4.0) records 10 hives continuously every 30 minutes for two years with queenright/queenless labels, which is exactly the structure required.",
+      "caveat": "Two hives, Apis mellifera, European. This is a negative result about the available public data, not a claim that hive acoustics cannot detect queen loss."
+    },
     "varroa_entrance_cnn": {
       "version": "varroa-entrance-cnn-0.1.0",
       "trained_at": "2026-09-08T14:45:25Z",
@@ -424,6 +472,25 @@
         "species": "Apis mellifera",
         "used_for": "Real colony-level validation: 53 hives in Quebec, one year, with measured Varroa destructor infestation levels, honey yield and winter mortality alongside temperature/humidity.",
         "restriction": "NON-COMMERCIAL. Usable for research and for this hackathon; must not train a model shipped commercially without separate permission from the authors."
+      },
+      "osbh_full": {
+        "title": "Open Source Beehives Project - Audio Database as of 2017-02-21",
+        "creators": "Open Source Beehives Project",
+        "year": 2017,
+        "doi": "10.5281/zenodo.321345",
+        "zenodo_record": 321345,
+        "license": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "commercial_use": true,
+        "attribution": "Open Source Beehives Project (2017). Audio Database. Zenodo. https://doi.org/10.5281/zenodo.321345 (CC BY 4.0)",
+        "approx_gb": 0.5,
+        "include_ext": [
+          ".zip"
+        ],
+        "species": "Apis mellifera",
+        "used_for": "Audited as a candidate source of extra hives for cross-hive queen detection. It is not one -- see audit_finding. This entry exists so the check is not repeated.",
+        "known_confound": "Citizen science: recording device, placement and environment vary per contributor, which is the same channel effect that defeats cross-hive transfer. More hives is the point -- it lets the effect be measured across many contributors instead of two.",
+        "audit_finding": "FETCHED AND AUDITED: 308 audio files, but the state split is Active 303, Missing Queen 1, Pre-Swarm 1, Queen Hatching 1, Sick-Varroa 1, Swarm 1 -- and 300 of the 303 Active files are from a single location (Canberra). There is exactly ONE queenless recording in the whole archive. It therefore adds no hive diversity for queen detection; the 'To bee or not to bee' curation had already extracted everything usable. Kept for provenance and for the queenright-only material, not used for supervised queen training."
       }
     },
     "rejected": {
@@ -444,49 +511,89 @@
         "source": "Kaggle: Smart Bee Colony Monitor, BeeTogether, BeeImage",
         "reason": "Require an authenticated Kaggle API token this environment does not have, and per-dataset licences vary and must be checked individually rather than assumed from the platform. Deferred, not dismissed.",
         "would_be_used_for": "Additional acoustic volume and a second opinion on queen detection."
+      },
+      "nuhive_full": {
+        "title": "Audio-Based identification of Beehive states: The dataset (full NU-Hive)",
+        "zenodo_record": 2667806,
+        "license": "CC-BY-4.0",
+        "approx_gb": 23.1,
+        "reason": "23 GB of RAR archives covering the SAME two hives (Hive1, Hive3) already present via 'To bee or not to bee'. Longer recordings of two hives do not fix a two-hive problem, and it does not fit the disk budget. Revisit only if hive count stops being the binding constraint.",
+        "would_be_used_for": "More minutes per hive, not more hives."
+      },
+      "bee_drone_audio": {
+        "title": "Dataset for honey bee audio detection",
+        "zenodo_record": 10359686,
+        "license": "CC-BY-4.0",
+        "reason": "Labels are bee vs drone, not queen state. Wrong task.",
+        "would_be_used_for": "n/a"
+      },
+      "beehive_audio_recordings_unlabelled": {
+        "title": "beehive Audio recordings",
+        "zenodo_record": 7052981,
+        "license": "CC-BY-4.0",
+        "reason": "10,000 clips carry a hive id and timestamp but NO colony-state label, so they cannot supervise queen detection. Held in reserve for per-hive baseline/anomaly work, which needs no labels.",
+        "would_be_used_for": "Unsupervised per-hive baseline modelling."
+      }
+    },
+    "blocked": {
+      "urban_frdr": {
+        "title": "UrBAN: Urban Beehive Acoustics and PheNotyping Dataset",
+        "doi": "10.20383/103.0972",
+        "host": "Federated Research Data Repository (FRDR), Canada",
+        "license": "CC-BY-4.0",
+        "approx_gb": 1500,
+        "why_it_matters": "10 hives, 2021-2022, Montreal, recording a 15-minute segment every 30 minutes CONTINUOUSLY, with queenright/queenless labels AND varroa infestation rates by alcohol wash. Continuity is the decisive property: it gives the same colony on ADJACENT days spanning a queen loss, which is the only structure that can separate a queen effect from a day effect. No other public dataset has it.",
+        "blocker": "Globus-only transfer; the repository's zip download is disabled while the files are being backed up. Needs a Globus account and Globus Connect Personal on the machine -- a user action, not a licence problem.",
+        "globus_url": "https://globus.frdr.ca/file-manager?locale=en-us&origin_id=f163c1b3-9c88-42f6-a7bb-5839ed6c4063&origin_path=/1/published/publication_967/submitted_data",
+        "note": "Only a subset is needed -- a few weeks per hive around a labelled queen event, not the full 1.5 TB."
+      },
+      "kaggle_beetogether": {
+        "title": "BeeTogether (merged bee audio) and Smart Bee Colony Monitor",
+        "host": "Kaggle",
+        "license": "per-dataset, must be checked individually",
+        "why_it_matters": "BeeTogether merges NUHIVE, OSBH, TBON and SBCM into 10 distinct hives and was built specifically to study hive extrapolation. It would let the cross-hive and the day-effect control run over 10 hives instead of 2.",
+        "blocker": "Needs a Kaggle API token (kaggle.json) placed in ~/.kaggle/. Two minutes of user action."
       }
     }
   },
   "mspb_colony": {
-    "version": "mspb-colony-0.1.0",
-    "trained_at": "2026-09-08T14:50:04Z",
+    "version": "mspb-colony-0.2.0",
+    "trained_at": "2026-09-09T16:17:06Z",
     "dataset": "MSPB (Zenodo 8371700), CC BY-NC 4.0",
     "dataset_doi": "10.5281/zenodo.8371700",
     "licence_restriction": "NON-COMMERCIAL. Research use only. Nothing trained on MSPB may ship in a commercial deployment without the authors' permission.",
     "species": "Apis mellifera",
-    "colonies_joined": 53,
-    "features": 44,
-    "feature_source": "per-colony mean and sd of 16 audio band energies, temperature, humidity, audio density and hive power",
-    "evaluation": "Leave-one-COLONY-out against a predict-the-mean baseline. The unit is the colony (n=53), not the sensor row (~1.9M), because rows from one colony are repeated measurements of the same thing.",
+    "colonies": 53,
+    "features": 36,
+    "feature_design": "Monthly means of 7 derived signals (low/mid/high band energy, high-low ratio, temperature, humidity, audio density), each summarised as mean, sd, last value, range and seasonal slope.",
+    "varroa_cutoff_month": 202008,
     "results": {
-      "varroa": {
-        "n_colonies": 53,
-        "unit": "varroa per 100 bees",
-        "mae": 0.6704,
-        "baseline_mae": 0.6257,
-        "r2": -0.3172,
-        "beats_baseline": false,
-        "improvement_over_baseline": -0.0447,
-        "target_mean": 0.449,
-        "target_std": 0.784
+      "varroa_detected_binary": {
+        "n": 53,
+        "positive_rate": 0.3208,
+        "auc": 0.3497,
+        "accuracy": 0.4906,
+        "majority_baseline": 0.6792,
+        "beats_chance": false,
+        "unit": "any mites found (>0 per 100 bees)"
       },
       "honey_kg": {
-        "n_colonies": 46,
-        "unit": "kg of honey",
-        "mae": 14.7769,
+        "n": 46,
+        "mae": 15.3336,
         "baseline_mae": 13.2994,
-        "r2": -0.2958,
+        "r2": -0.32,
         "beats_baseline": false,
-        "improvement_over_baseline": -1.4774,
-        "target_mean": 37.528,
-        "target_std": 16.549
+        "unit": "kg of honey",
+        "target_mean": 37.53,
+        "target_sd": 16.55
       }
     },
-    "finding": "Season-MEAN acoustic, temperature and humidity features carry no usable signal about a colony's end-of-season varroa load or honey yield across these 53 colonies. Both targets score worse than predicting the training mean.",
-    "what_this_does_and_does_not_say": "It does NOT say hive sensors cannot predict yield. It says the crudest defensible summarisation -- one average per colony per sensor over a whole season -- throws away the trajectory, and trajectory is where our own simulator models find their signal (ml/features.py uses rolling windows precisely because faults are trajectories, not instants). A time-resolved model is the obvious next step.",
-    "why_we_did_not_keep_tuning": "With n=53 colonies and a leave-one-out score, iterating on feature engineering until the number turns positive is fitting the evaluation, not the problem. We ran the analysis we designed before seeing the answer, and we are reporting what it gave.",
-    "bug_found_and_fixed": "The first run of this script joined on `beehub_name` and reported honey R^2 = +0.136, 'beats baseline'. beehub_name is the APIARY: two values for 53 colonies, so every colony received one of two feature vectors and the score was an apiary-mean effect. Joining correctly on tag_number - 200000 moved honey R^2 to -0.309. A guard now refuses to report any score when the number of distinct feature vectors is under half the number of colonies.",
-    "caveat": "Apis mellifera in Quebec, n=53 colonies. A negative result at this sample size is weak evidence, and it is reported rather than tuned away."
+    "notes": {
+      "varroa": "Modelled as CLASSIFICATION because the count is zero-inflated: 36 of 53 colonies measured exactly zero, median 0.0, max 2.74. Regression on that target mostly rewards predicting the mean. Features use only months before the measurement date."
+    },
+    "evaluation": "Leave-one-COLONY-out (n=53). The unit is the colony, not the sensor row, because rows from one colony are repeated measurements of the same thing.",
+    "changes_from_0_1_0": "v0.1.0 used one season average per colony and found nothing. It also leaked (the average spanned months after the varroa count) and modelled a zero-inflated count as regression. v0.2.0 uses time-resolved monthly features, restricts varroa features to months before the measurement, and models varroa as binary detection scored by AUC.",
+    "caveat": "Apis mellifera in Quebec, n=53 colonies. At this sample size both a positive and a negative result are weak evidence, and no amount of feature engineering changes that. Reported as measured."
   },
   "sensor_ablation": {
     "generated_at": "2026-09-05T20:02:26Z",

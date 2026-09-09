@@ -51,37 +51,69 @@ def _md5(path: Path) -> str:
     return h.hexdigest()
 
 
-def _download(url: str, dest: Path, expect_md5: str | None, size: int) -> str:
-    """Resumable download. Returns 'cached', 'resumed' or 'downloaded'."""
+def _download(url: str, dest: Path, expect_md5: str | None, size: int,
+              attempts: int = 5) -> str:
+    """Resumable download with retries. Returns 'cached', 'resumed' or 'downloaded'.
+
+    Zenodo drops connections mid-stream often enough that a single pass is not
+    good enough: the socket simply ends early and a naive reader thinks it is
+    finished. So the loop checks the byte count against the size the API
+    declared, resumes with a Range request, and only then verifies the MD5.
+    A truncated archive that silently trains a model is a far worse outcome
+    than a crash.
+    """
     if dest.exists() and dest.stat().st_size == size:
         if expect_md5 is None or _md5(dest) == expect_md5:
             return "cached"
         dest.unlink()          # corrupt; start over
 
-    have = dest.stat().st_size if dest.exists() else 0
-    mode, headers = "wb", {}
-    if 0 < have < size:
-        mode, headers = "ab", {"Range": f"bytes={have}-"}
+    started_with = dest.stat().st_size if dest.exists() else 0
+    for attempt in range(1, attempts + 1):
+        have = dest.stat().st_size if dest.exists() else 0
+        if have >= size > 0:
+            break
+        mode, headers = "wb", {}
+        if 0 < have < size:
+            mode, headers = "ab", {"Range": f"bytes={have}-"}
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            t0, done = time.time(), have
+            with urllib.request.urlopen(req, timeout=300) as r, dest.open(mode) as out:
+                while True:
+                    block = r.read(CHUNK)
+                    if not block:
+                        break
+                    out.write(block)
+                    done += len(block)
+                    if time.time() - t0 > 2:
+                        pct = 100 * done / size if size else 0
+                        print(f"\r    {dest.name[:46]:<46} {pct:5.1f}%",
+                              end="", flush=True)
+                        t0 = time.time()
+        except Exception as exc:                       # noqa: BLE001
+            print(f"\r    {dest.name[:46]:<46} attempt {attempt} failed: "
+                  f"{type(exc).__name__}")
+            time.sleep(min(30, 3 * attempt))
+            continue
 
-    req = urllib.request.Request(url, headers=headers)
-    t0, done = time.time(), have
-    with urllib.request.urlopen(req, timeout=300) as r, dest.open(mode) as out:
-        while True:
-            block = r.read(CHUNK)
-            if not block:
-                break
-            out.write(block)
-            done += len(block)
-            if time.time() - t0 > 2:
-                pct = 100 * done / size if size else 0
-                print(f"\r    {dest.name[:52]:<52} {pct:5.1f}%", end="", flush=True)
-                t0 = time.time()
-    print(f"\r    {dest.name[:52]:<52} 100.0%")
+        got = dest.stat().st_size if dest.exists() else 0
+        if got >= size > 0:
+            break
+        print(f"\r    {dest.name[:46]:<46} truncated at "
+              f"{100 * got / size:5.1f}% (attempt {attempt}), resuming")
+        time.sleep(min(30, 3 * attempt))
+
+    got = dest.stat().st_size if dest.exists() else 0
+    if size and got < size:
+        raise SystemExit(
+            f"{dest.name}: got {got} of {size} bytes after {attempts} attempts. "
+            f"Zenodo may be degraded; re-run to resume from where it stopped.")
+    print(f"\r    {dest.name[:46]:<46} 100.0%")
 
     if expect_md5 and _md5(dest) != expect_md5:
         dest.unlink()
         raise SystemExit(f"checksum mismatch for {dest.name}; deleted, re-run to retry")
-    return "resumed" if have else "downloaded"
+    return "resumed" if started_with else "downloaded"
 
 
 def fetch(name: str, spec: dict, *, dry_run: bool = False) -> None:

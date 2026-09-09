@@ -1,41 +1,39 @@
 {
-  "version": "mspb-colony-0.1.0",
-  "trained_at": "2026-09-08T14:50:04Z",
+  "version": "mspb-colony-0.2.0",
+  "trained_at": "2026-09-09T16:17:06Z",
   "dataset": "MSPB (Zenodo 8371700), CC BY-NC 4.0",
   "dataset_doi": "10.5281/zenodo.8371700",
   "licence_restriction": "NON-COMMERCIAL. Research use only. Nothing trained on MSPB may ship in a commercial deployment without the authors' permission.",
   "species": "Apis mellifera",
-  "colonies_joined": 53,
-  "features": 44,
-  "feature_source": "per-colony mean and sd of 16 audio band energies, temperature, humidity, audio density and hive power",
-  "evaluation": "Leave-one-COLONY-out against a predict-the-mean baseline. The unit is the colony (n=53), not the sensor row (~1.9M), because rows from one colony are repeated measurements of the same thing.",
+  "colonies": 53,
+  "features": 36,
+  "feature_design": "Monthly means of 7 derived signals (low/mid/high band energy, high-low ratio, temperature, humidity, audio density), each summarised as mean, sd, last value, range and seasonal slope.",
+  "varroa_cutoff_month": 202008,
   "results": {
-    "varroa": {
-      "n_colonies": 53,
-      "unit": "varroa per 100 bees",
-      "mae": 0.6704,
-      "baseline_mae": 0.6257,
-      "r2": -0.3172,
-      "beats_baseline": false,
-      "improvement_over_baseline": -0.0447,
-      "target_mean": 0.449,
-      "target_std": 0.784
+    "varroa_detected_binary": {
+      "n": 53,
+      "positive_rate": 0.3208,
+      "auc": 0.3497,
+      "accuracy": 0.4906,
+      "majority_baseline": 0.6792,
+      "beats_chance": false,
+      "unit": "any mites found (>0 per 100 bees)"
     },
     "honey_kg": {
-      "n_colonies": 46,
-      "unit": "kg of honey",
-      "mae": 14.7769,
+      "n": 46,
+      "mae": 15.3336,
       "baseline_mae": 13.2994,
-      "r2": -0.2958,
+      "r2": -0.32,
       "beats_baseline": false,
-      "improvement_over_baseline": -1.4774,
-      "target_mean": 37.528,
-      "target_std": 16.549
+      "unit": "kg of honey",
+      "target_mean": 37.53,
+      "target_sd": 16.55
     }
   },
-  "finding": "Season-MEAN acoustic, temperature and humidity features carry no usable signal about a colony's end-of-season varroa load or honey yield across these 53 colonies. Both targets score worse than predicting the training mean.",
-  "what_this_does_and_does_not_say": "It does NOT say hive sensors cannot predict yield. It says the crudest defensible summarisation -- one average per colony per sensor over a whole season -- throws away the trajectory, and trajectory is where our own simulator models find their signal (ml/features.py uses rolling windows precisely because faults are trajectories, not instants). A time-resolved model is the obvious next step.",
-  "why_we_did_not_keep_tuning": "With n=53 colonies and a leave-one-out score, iterating on feature engineering until the number turns positive is fitting the evaluation, not the problem. We ran the analysis we designed before seeing the answer, and we are reporting what it gave.",
-  "bug_found_and_fixed": "The first run of this script joined on `beehub_name` and reported honey R^2 = +0.136, 'beats baseline'. beehub_name is the APIARY: two values for 53 colonies, so every colony received one of two feature vectors and the score was an apiary-mean effect. Joining correctly on tag_number - 200000 moved honey R^2 to -0.309. A guard now refuses to report any score when the number of distinct feature vectors is under half the number of colonies.",
-  "caveat": "Apis mellifera in Quebec, n=53 colonies. A negative result at this sample size is weak evidence, and it is reported rather than tuned away."
+  "notes": {
+    "varroa": "Modelled as CLASSIFICATION because the count is zero-inflated: 36 of 53 colonies measured exactly zero, median 0.0, max 2.74. Regression on that target mostly rewards predicting the mean. Features use only months before the measurement date."
+  },
+  "evaluation": "Leave-one-COLONY-out (n=53). The unit is the colony, not the sensor row, because rows from one colony are repeated measurements of the same thing.",
+  "changes_from_0_1_0": "v0.1.0 used one season average per colony and found nothing. It also leaked (the average spanned months after the varroa count) and modelled a zero-inflated count as regression. v0.2.0 uses time-resolved monthly features, restricts varroa features to months before the measurement, and models varroa as binary detection scored by AUC.",
+  "caveat": "Apis mellifera in Quebec, n=53 colonies. At this sample size both a positive and a negative result are weak evidence, and no amount of feature engineering changes that. Reported as measured."
 }

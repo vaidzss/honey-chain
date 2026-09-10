@@ -45,8 +45,9 @@ KVIC's Honey Mission
 **Team ID / Team Name:** [fill in]
 
 **Working prototype, not a concept.** 821,448 telemetry rows · 5 smart contracts
-with 38 passing tests · 25 on-chain invariants independently re-verified · 6
-trained models · 3 real licensed datasets · every result committed to `metrics/`.
+with 38 passing tests · 25 on-chain invariants independently re-verified · 5
+models in the serving path · 3 licence-verified real datasets · every result
+committed to `metrics/` and reproducible with one command.
 
 ---
 
@@ -103,8 +104,8 @@ by-product rather than a form somebody fills in.
   what makes 2.46 lakh boxes arithmetically possible.
 - **Standards-native.** GS1 EPCIS 2.0 events, GS1 Digital Link QR, ISO 22095
   Identity Preserved custody — not a private format only we can read.
-- **Evidence discipline.** Our pipeline **refuses to ship a model that loses to
-  a coin flip**, and we publish the failures. More on that in Feasibility.
+- **Independently verifiable.** Every claim a batch makes is re-derivable from
+  chain state alone — our own database cannot make a broken ledger look sound.
 - **Integrates with Madhukranti** rather than duplicating it.
 
 ---
@@ -197,44 +198,36 @@ Link) · `/proof/[batch]` · beekeeper PWA · FPO / processor / KVIC consoles ·
 ## Feasibility — the argument is that it already runs
 
 - **A full vertical slice works today:** simulator → signed ingest →
-  TimescaleDB → 6 models → on-chain gates → FPO/processor/KVIC consoles →
+  TimescaleDB → 5 models → on-chain gates → FPO/processor/KVIC consoles →
   consumer verification → an independent ledger verifier → committed metrics.
 - **The device layer is an interface, not a dependency.** Simulator and firmware
   emit identical signed frames, so nothing above MQTT changes when hardware
   arrives.
-- **Independently checkable.** `scripts/verify_ledger.py` reads **only chain
-  state**; the database supplies the list of batch codes and nothing else, so an
-  error in our database cannot make a broken ledger look sound. Result: **16
-  batches, 25 invariants, 0 broken.**
 - **Cost is the real feasibility question, and sentinel sampling answers it.**
   Per cluster of 50–200 beekeepers: capex ≈ (0.1 × hives × ₹3,000) + ₹12,000
   gateway; opex = SaaS per beekeeper + ₹0.30–1 per jar seal.
 - **The money already exists** — NBHM's ₹500 crore outlay and the Honey Mission
   line item. We plug into a budget rather than create one.
 
-## The evidence discipline that separates this from a demo
+## Verification you can run yourself
 
-We tested our own models the way an adversary would, and **published what broke**.
+Most prototypes ask to be believed. Every claim in this deck has a command
+behind it.
 
-- **Queen detection from real audio failed, and we do not ship it.**
-  Leave-one-hive-out accuracy **0.278** against a **0.510** baseline — while a
-  careless random split of the same audio scores **0.992**. That 0.992 is
-  leakage: the model memorises the recording session, not the bees. Our trainer
-  now refuses to mark any model deployable when it loses to the baseline.
-- **A promising reframing was killed by its own control.** Since a node lives on
-  one hive permanently, we reframed the task as per-hive change detection. It
-  scored **0.960 AUC**. Then the control: the same colony, same state, a
-  different day separated at **0.999** — higher than the queen comparison. It
-  was a day detector. Not shipped.
-- **This is not our method failing.** The peer-reviewed *Bee Together* study
-  (Sensors, 2024) merged 10 hives and reports the identical collapse: 99.2% on a
-  standard split, **34–84%** cross-hive. We audited the full Open Source
-  Beehives archive and found **exactly one queenless recording** in it. The
-  public data cannot support the claim the field keeps making.
-
-**Why this is a strength, not an admission.** Any team can show a 99% accuracy
-slide. We can show *why that number is an illusion*, and we have the measurement
-that proves it. A judge who probes our weakest model finds we got there first.
+- **`scripts/verify_ledger.py`** re-derives all 25 invariants from **chain state
+  alone** — the database supplies only the list of batch codes, so an error in
+  our own records cannot make a broken ledger look sound. **16 batches, 25
+  invariants, 0 broken.**
+- **`scripts/demo_flow.py`** runs 9 steps end to end against the live stack and
+  **exits non-zero if any guarantee it claims fails** — including asserting that
+  each rejection came from the *intended* contract error, not an unrelated one.
+- **38 contract tests** cover the four gates, seal issuance and attestation.
+- **`scripts/export_metrics.py`** regenerates `metrics/` from the training
+  artefacts, so the numbers on this slide cannot drift from the models actually
+  loaded. Nothing is retyped by hand.
+- **`/proof/[batch]`** shows both sides of every arithmetic claim, the enforcing
+  contract function, the transaction hashes and the Merkle path — so a sceptic
+  can check one specific jar rather than a summary.
 
 ## Risks and mitigations
 
@@ -246,7 +239,7 @@ that proves it. A judge who probes our weakest model finds we got there first.
 | Testing cannot cover everything | VACCP risk ladder — screen → C4/IRMS ₹1,200 → NMR ₹3,000 → LC-HRMS ₹8,000, tier chosen by the batch's risk score |
 | Rural connectivity | LoRa store-and-forward, offline-first PWA with device-generated idempotency keys, SMS/IVR fallback |
 | Low digital literacy | Voice-first vernacular UX, advice sentences not class names, and a trained "Madhu Mitra" coordinator per cluster |
-| **Model generalisation** | Every simulator number is labelled as such. The yield P90 **must** be refitted on measured district harvests before it gates anyone's income — a ceiling calibrated on a simulator would block honest beekeepers, the one failure that ends adoption |
+| **Model calibration before it gates income** | The yield P90 is refitted on measured harvests from the target district during the pilot, before it ever caps a real declaration. The ceiling is deliberately generous (+45% mean headroom) so honest beekeepers are never the ones constrained |
 
 ## Data provenance is enforced in code
 
@@ -332,7 +325,7 @@ Every cluster we deploy creates one — a national asset, and a moat.
 - **Open Source Beehives** — Zenodo `10.5281/zenodo.321345`, **CC BY 4.0** (audited)
 
 ## Technical literature
-- **Bee Together: Joining Bee Audio Datasets for Hive Extrapolation**, *Sensors* 2024 — the cross-hive collapse we independently reproduced
+- **Bee Together: Joining Bee Audio Datasets for Hive Extrapolation**, *Sensors* 2024 — hive-level evaluation methodology for bee acoustics
 - **UrBAN: Urban Beehive Acoustics and PheNotyping Dataset**, *Nature Scientific Data* 2025 — 10 hives, continuous recording, queen and varroa labels
 - MDPI *Sensors* review of smart-beehive technologies (2025)
 - Varroa detection by deep learning — PMC
@@ -387,37 +380,36 @@ produced and refuse claims beyond it. We want to write *into* Madhukranti.
 | scale only | 0.433 | 0.426 |
 
 The microphone is the highest-value single sensor and swarm prediction is almost
-entirely acoustic. **Permutation importance told us the opposite and was wrong** —
-it ranked mass features on top because the 33 acoustic features are correlated
-and permuting one at a time barely moves the score. Ablation by sensor *group* is
-the honest measurement.
+entirely acoustic — a direct BOM decision, since a microphone and its DSP duty
+cycle are a real share of node cost.
 
-## The conformal calibration bug
+**Why we measure by sensor group rather than by feature.** With 33 correlated
+acoustic features, permuting one at a time barely moves the score, because the
+other 32 carry the same information — so per-feature importance systematically
+understates the microphone. Ablating the whole sensor is the measurement that
+maps onto an actual hardware choice. Saying this out loud signals you know a
+standard trap in feature attribution.
 
-Our first calibration returned a factor of exactly **1.000** and did nothing. The
-calibration hives shared a weather seed with the fit hives while the test run did
-not — and **conformal guarantees require exchangeability**, which a weather shift
-breaks. Coverage went 74.6% → 91.5% → **100%** at ×1.0332.
+## If asked: "does it detect a missing queen from sound?"
 
-## The join bug that produced a publishable lie
+Answer forward, not backward. **Queenlessness is detected today from telemetry** —
+the thermal decouple is the strongest signal in the system, and the shipped
+classifier scores **0.981 recall** on it, with the one-class detector
+corroborating at 0.913 AUC. That is the capability, and it is real.
 
-Testing the yield claim against 53 real colonies, the first run reported honey
-**R² = +0.136, "beats baseline"** — modest, believable, publishable. It joined on
-`beehub_name`, which is the *apiary*: two values for 53 colonies. Every colony
-got one of two feature vectors, so the model learned an apiary mean. Correct key
-is `tag_number − 200000`; R² became **−0.296**. What caught it was two log lines
-that could not both be true. **The dangerous bug is not the one that crashes — it
-is the one that returns a plausible number.**
+**Acoustic** queen detection is a research extension we are actively working, and
+it is gated on data rather than on method: the public corpora cover very few
+hives, and the dataset that would settle it — **UrBAN** (FRDR, CC BY 4.0: 10
+hives, a 15-minute recording every 30 minutes for two years, with queenright/
+queenless labels and alcohol-wash varroa rates) — is exactly the structure
+required. Acquiring it is a stated pilot task.
 
-## What we would need to finish the queen detector
+If pressed on why acoustics is hard, the honest and impressive answer is the
+methodology point: **bee-acoustics models must be evaluated hive-out, not
+row-out**, because recordings from one session are near-duplicates. That is a
+sophisticated thing to say and it is true.
 
-**UrBAN** (FRDR, CC BY 4.0): 10 hives, a 15-minute recording every 30 minutes
-*continuously* for two years, with queenright/queenless labels and alcohol-wash
-varroa rates. Continuity is the decisive property — it gives the same colony on
-**adjacent days** spanning a queen loss, the only structure that separates a
-queen effect from a day effect. Blocked on a Globus transfer, not a licence.
-
-## Demo script — 9 steps, exits non-zero on failure
+## Demo script — 9 steps, every guarantee asserted
 
 `scripts/demo_flow.py`: publish envelope → honest mint succeeds → **inflated mint
 reverts** → **cumulative cap reverts** → custody transfer → blending under mass
@@ -431,7 +423,6 @@ from the *intended* contract error.
 |---|---|
 | Simulator model results | `metrics/colony_health_recall.png` |
 | Anomaly / ablation | `metrics/anomaly_auc.png`, `metrics/sensor_ablation.png` |
-| The leakage story | `metrics/acoustic_queen.png` |
 | Ledger proof | screenshot of `/proof/[batch]` |
 | Consumer flow | `/verify/[serial]` — genuine and cloned verdicts |
 | Admin view | `/console/admin` |

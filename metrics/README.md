@@ -1,6 +1,6 @@
 # Model results
 
-Generated 2026-09-09T16:25:41Z by `scripts/export_metrics.py`.
+Generated 2026-09-19T12:51:13Z by `scripts/export_metrics.py`.
 Every number is read from the artefact that produced it — nothing here
 is retyped, so this cannot drift from the models actually loaded.
 
@@ -161,11 +161,12 @@ Modelled as CLASSIFICATION because the count is zero-inflated: 36 of 53 colonies
 
 ## Ledger verification
 
-- **Not run** — could not reach the chain or database; the stack was not running when metrics were exported.
-- This is *not* a verification failure: nothing was checked.
-- Reproduce: `start the stack, then: python scripts/verify_ledger.py`
+- 15 batches, 24 invariant checks **all held**, 0 broken.
+- Verified against chain state alone. The database supplied only the list of batch codes; every value was read from the deployed contracts.
 
-- Last successful run: 16 batches, 25 invariants held, 0 broken.
+The invariants checked are: issuance bounded by the telemetry-derived ceiling, mass conserved through every transformation, jars issued bounded by the honey that exists, and no seals without a passing independent lab report.
+
+Reproduce with `python scripts/verify_ledger.py`.
 
 ---
 

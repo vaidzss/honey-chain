@@ -46,7 +46,7 @@ and the intelligence layer. Sequence and exit gates are in
 | Beekeeper app (Hindi + English) | working |
 | Varroa counter (classical CV) | working — refuses unusable photos |
 | **Models on real licensed data** | 1 works, 2 negative — [docs/15-real-data.md](docs/15-real-data.md) |
-| Metrics page, ledger proofs, 3 consoles | working — 25 invariants verified, chain-only |
+| Metrics page, ledger proofs, 3 consoles | working — 24/24 invariants verified, chain-only |
 | Offline harvest queue | working |
 | ESP32 firmware | not started — [stage 3](docs/14-roadmap.md) |
 

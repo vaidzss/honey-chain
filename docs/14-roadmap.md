@@ -40,7 +40,7 @@ frame is stored.
 - GS1 EPCIS 2.0 events, GS1 Digital Link QR, GTIN/GLN/SSCC identifiers
 - VACCP risk ladder and testing budget allocator
 
-**Gate passed:** `scripts/verify_ledger.py` re-derives 25 invariants across 16
+**Gate passed:** `scripts/verify_ledger.py` re-derives 24 invariants across 15
 batches from **chain state alone**, 0 broken. `scripts/demo_flow.py` runs 9
 steps end to end and asserts each rejection came from the *intended* contract
 error.

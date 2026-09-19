@@ -2,13 +2,13 @@
   "network": "localhost",
   "chainId": 31337,
   "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  "deployedAt": "2026-09-05T19:31:00.220Z",
+  "deployedAt": "2026-09-19T12:44:06.005Z",
   "addresses": {
-    "Registry": "0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD",
-    "YieldOracle": "0x51A1ceB83B83F1985a81C295d1fF28Afef186E02",
-    "HoneyBatch": "0x36b58F5C1969B7b6591D752ea6F5486D069010AB",
-    "SealRegistry": "0x0355B7B8cb128fA5692729Ab3AAa199C1753f726",
-    "Attestation": "0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7"
+    "Registry": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "YieldOracle": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+    "HoneyBatch": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "SealRegistry": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "Attestation": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
   },
   "abis": {
     "Registry": [

@@ -55,7 +55,7 @@ Built for **SIH 2026 problem statement SIH26021** (KVIC, Ministry of MSME).
 | **Queen detection, per-hive reframing** | **measured** — fails its day-effect control |
 | Licensed dataset registry + fetcher | working — licence enforced in code |
 | Metrics page (`/metrics`) | working |
-| Ledger proofs + independent verifier | working — 25 invariants over 16 batches, chain-only |
+| Ledger proofs + independent verifier | working — 24/24 invariants over 15 batches, chain-only |
 | FPO / processor / KVIC consoles | working |
 | Offline harvest queue | working, idempotent |
 

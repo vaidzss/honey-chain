@@ -7,7 +7,7 @@
 **Theme:** Agriculture, FoodTech & Rural Development · **Category:** Software
 **Team ID / Team Name:** [fill in]
 
-Working prototype, not a concept — **821,448 telemetry rows · 5 smart contracts, 38 tests passing · 25 on-chain invariants independently re-verified · 5 models serving · 3 licence-verified real datasets.**
+Working prototype, not a concept — **821,448 telemetry rows · 5 smart contracts, 38 tests passing · 24 on-chain invariants independently re-verified · 5 models serving · 3 licence-verified real datasets.**
 
 ---
 
@@ -74,7 +74,7 @@ Loop C returning into Loop B is what most designs miss: scans and lab results ar
 
 | Required | Delivered | Evidence |
 |---|---|---|
-| Blockchain traceability, hive→jar | 5 contracts, 4 gates, Merkle-anchored seals | 25 invariants, 0 broken |
+| Blockchain traceability, hive→jar | 5 contracts, 4 gates, Merkle-anchored seals | 24 invariants, 0 broken |
 | QR consumer verification | SSR page, 3 verdicts, clone + geo detection | GS1 Digital Link |
 | Batch traceability | Mint → transfer → process → blend → pack | `/proof/[batch]` |
 | **Hive disease detection** | 8-class classifier + anomaly detector + varroa CNN | 97.4% acc; queenless **0.981** |
@@ -104,7 +104,7 @@ Simulator → signed ingest → TimescaleDB → 5 models → on-chain gates → 
 
 Most prototypes ask to be believed. Every claim has a command behind it.
 
-- `verify_ledger.py` — re-derives 25 invariants from **chain state alone**; our database supplies only batch codes, so our own error cannot make a broken ledger look sound. **16 batches, 25 invariants, 0 broken.**
+- `verify_ledger.py` — re-derives 24 invariants from **chain state alone**; our database supplies only batch codes, so our own error cannot make a broken ledger look sound. **15 batches, 24 invariants, 0 broken.**
 - `demo_flow.py` — 9 steps end to end, **exits non-zero if any guarantee fails**, and asserts each rejection came from the *intended* contract error.
 - **38 contract tests** · `export_metrics.py` regenerates every number from training artefacts, so nothing is retyped.
 
@@ -182,6 +182,6 @@ Per cluster of 50–200 beekeepers: capex ≈ (0.1 × hives × ₹3,000) + ₹12
 ```
 python ml/fetch_datasets.py --all      # licence-checked, MD5-verified
 python scripts/export_metrics.py       # regenerates metrics/ from artefacts
-python scripts/verify_ledger.py        # 25 invariants from chain state alone
+python scripts/verify_ledger.py        # 24 invariants from chain state alone
 python scripts/demo_flow.py            # 9-step proof, exits non-zero on failure
 ```

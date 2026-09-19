@@ -101,7 +101,10 @@ export default async function BeekeeperHome({ params, searchParams }) {
   const s = d.summary;
 
   return (
-    <>
+    // Declaring the language is what lets the stylesheet drop the Latin
+    // letterspacing from Devanagari, where it detaches matras from their
+    // base consonants.
+    <div lang={lang}>
       <div className="bk-top">
         <div>
           <h2>{t.title}</h2>
@@ -183,6 +186,6 @@ export default async function BeekeeperHome({ params, searchParams }) {
       >
         {t.record}
       </Link>
-    </>
+    </div>
   );
 }

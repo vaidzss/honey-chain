@@ -126,15 +126,16 @@ function Origins({ origins }) {
       <h3>Origin</h3>
       {origins.map((o, i) => (
         <div className="origin" key={i}>
+          {/* The apiary leads, not the district. Two apiaries in one cluster
+              share a district, so leading with the place printed the same
+              heading twice and read like a broken data binding. */}
           <div className="row">
-            <span className="place">
-              {o.district}, {o.state}
-            </span>
+            <span className="place">{o.apiary || o.beekeeper}</span>
             <span className="pct">{o.pct.toFixed(1)}%</span>
           </div>
           <div className="who">
             {o.beekeeper}
-            {o.apiary ? ` · ${o.apiary}` : ""}
+            {o.district ? ` · ${o.district}, ${o.state}` : ""}
           </div>
           <div className="bar">
             <i style={{ width: `${Math.max(2, o.pct)}%` }} />

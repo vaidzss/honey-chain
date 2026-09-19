@@ -59,8 +59,12 @@ async function shot(page, name) {
 
   // 2. the real code proves it
   await page.fill('input[name="code"]', CODE);
-  await page.keyboard.press("Enter");
-  await page.waitForLoadState("networkidle");
+  // Wait for the form's own navigation to land. Asserting before it settles
+  // let the next goto() race it, which failed intermittently.
+  await Promise.all([
+    page.waitForURL(/[?&]code=/, { waitUntil: "networkidle", timeout: 30000 }),
+    page.keyboard.press("Enter"),
+  ]);
   t = await body();
   record("correct scratch-off code verifies the jar", /Verified genuine/i.test(t));
   record("journey shows the real apiary", /Ramesh/i.test(t), "Ramesh Apiary in the journey");
@@ -129,6 +133,30 @@ async function shot(page, name) {
     () => document.documentElement.scrollWidth > window.innerWidth + 1);
   record("verify page does not scroll sideways on a phone", !overflow);
   await p2.screenshot({ path: path.join(SHOTS, "11-verify-phone.png"), fullPage: true });
+
+  // 11. dark mode is a full token set, not an afterthought; a token defined
+  //     only in the light block renders one theme's text on the other's ground
+  const dark = await browser.newContext({
+    colorScheme: "dark", viewport: { width: 900, height: 1200 } });
+  const p3 = await dark.newPage();
+  await p3.goto(`${WEB}/verify/${SERIAL}?code=${CODE}`, { waitUntil: "networkidle" });
+  const theme = await p3.evaluate(() => {
+    const s = getComputedStyle(document.body);
+    const lum = (c) => {
+      const [r, g, b] = c.match(/\d+/g).map(Number).map((v) => {
+        v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const bg = lum(s.backgroundColor), fg = lum(s.color);
+    const ratio = (Math.max(bg, fg) + 0.05) / (Math.min(bg, fg) + 0.05);
+    return { bgLum: bg, ratio };
+  });
+  record("dark mode paints a dark ground", theme.bgLum < 0.2,
+    `body luminance ${theme.bgLum.toFixed(3)}`);
+  record("dark mode body text stays legible", theme.ratio >= 7,
+    `contrast ${theme.ratio.toFixed(1)}:1`);
+  await p3.screenshot({ path: path.join(SHOTS, "12-verify-dark.png"), fullPage: true });
 
   record("no browser console errors", consoleErrors.length === 0,
     consoleErrors.slice(0, 2).join(" | "));

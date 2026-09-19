@@ -62,7 +62,9 @@ export default async function Metrics() {
   const sys = d.system ?? {};
 
   return (
-    <>
+    // Opt into the wide shell: at 560px the four-up stat grids wrapped with a
+    // single tile stranded on its own row, three times on this page.
+    <div className="wide-content">
       <div className="bk-top">
         <div>
           <h2>Model metrics</h2>
@@ -274,6 +276,6 @@ export default async function Metrics() {
         on real bees. Most public bee acoustics are <em>Apis mellifera</em>, and{" "}
         <em>Apis cerana indica</em> is a further gap with no public dataset.
       </div>
-    </>
+    </div>
   );
 }
